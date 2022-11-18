@@ -46,7 +46,7 @@ class BrowserController():
     def goto_first_race(self) -> None:
         next_race = self.wd.find_element(By.XPATH, '//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[1]')
         self.wd.execute_script(CLICK, next_race)
-
+  
     """
     Creates a list of every upcoming race from the upcoming races page on BETR. Hopefully classname doesn't change a lot or this will be a bad way to do it
     """
@@ -55,8 +55,20 @@ class BrowserController():
         races_container = self.wd.find_element(By.CLASS_NAME, "RaceUpcoming_grid__6YRbf")
 
         #From container, get every child
-        races_list = races_container.find_elements(By.CLASS_NAME, "RaceUpcoming_row__rS63w")
-        return races_list
+        races = races_container.find_elements(By.CLASS_NAME, "RaceUpcoming_row__rS63w")
+        return races
+
+    """
+    Goes to every race on the upcoming races page and then goes back
+    """
+    def goto_every_race(self) -> None:
+        #Had issues with trying to iterate over list normally with for loop, so reload the race list every time and access each race by index. Inefficient but it works fine
+        for race_number in range(20):
+            races = self.get_all_upcoming_races()
+            self.wd.execute_script(CLICK, races[race_number])
+            #time.sleep(1) #It can go through every race in about 1 second if these sleeps are commented out. Pretty cool tbh
+            self.wd.back()
+            #time.sleep(1)
 
 if __name__ == "__main__":
     load_dotenv()
@@ -65,5 +77,5 @@ if __name__ == "__main__":
     #price = browserController.get_price()
     #print(price)
     #browserController.goto_first_race()
-    browserController.get_all_upcoming_races()
+    browserController.goto_every_race()
     time.sleep(8)
