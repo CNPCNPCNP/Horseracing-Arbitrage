@@ -1,6 +1,7 @@
 import time
 import os
 
+from race import Race
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -62,7 +63,7 @@ class BrowserController():
     """
     Goes to every race on the upcoming races page and then goes back
     """
-    def goto_every_race(self) -> list[dict]:
+    def goto_every_race(self) -> list[Race]:
         races_summary = []
         #Had issues with trying to iterate over list normally with for loop, so reload the race list every time and access each race by index. Inefficient but it works fine
         for race_number in range(20):
@@ -70,7 +71,7 @@ class BrowserController():
             self.wd.execute_script(CLICK, races[race_number])
             
             race_summary = self.get_prices_from_race_page()
-            if race_summary:
+            if race_summary.get_horses():
                 races_summary.append(race_summary)
             self.wd.back()
         
@@ -79,9 +80,14 @@ class BrowserController():
     """
     Starting with the webdriver on a race page, creates a dictionary of every horse name and its current starting price
     """
-    def get_prices_from_race_page(self) -> dict:
+    def get_prices_from_race_page(self) -> Race:
         horses = self.wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
         prices = self.wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
+
+        #Race name is location + race number
+        race_location = self.wd.find_element(By.XPATH, '//*[@id="bm-content"]/div[2]/div/div[1]/ul/li[2]/a').text
+        race_number = int(self.wd.find_element(By.XPATH, '//*[@id="bm-content"]/div[2]/div/div[1]/ul/li[3]/a').text.split(" ")[-1])
+        print(race_location, race_number)
 
         race_summary = {}
 
@@ -101,7 +107,7 @@ class BrowserController():
             #Get current price of horse. For some reason the div number seems to be separated by 6 each time starting from 4
             number = str(index * 6 + 4)
 
-            #Need to handle exceptions as sometimes the races don't have prices? Probably a neat way to do this
+            #Need to handle exceptions as sometimes the races don't have prices? Probably a neater way to do this
             try:
                 price = self.wd.find_element(By.XPATH, f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]")
             except NoSuchElementException:
@@ -110,7 +116,7 @@ class BrowserController():
                 break
             
             race_summary[(horse_name, gate)] = float(price.text)
-        return race_summary
+        return Race(race_location, race_number, race_summary)
 
 if __name__ == "__main__":
     load_dotenv()
@@ -120,3 +126,5 @@ if __name__ == "__main__":
 
     print(races_summary)
     time.sleep(8)
+
+    
