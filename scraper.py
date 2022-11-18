@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 #CONSTANTS. Use all capitals to define global constants please
 URL = 'https://betr.com.au/racebook#/racing/home/upcoming'
@@ -23,7 +24,7 @@ class BrowserController():
 
         self.wd = webdriver.Chrome(path)
         self.wd.maximize_window() # For maximizing window
-        self.wd.implicitly_wait(20) # gives an implicit wait for 20 seconds
+        self.wd.implicitly_wait(1) # gives an implicit wait for 20 seconds
         self.wd.get(url)
 
     """
@@ -61,21 +62,61 @@ class BrowserController():
     """
     Goes to every race on the upcoming races page and then goes back
     """
-    def goto_every_race(self) -> None:
+    def goto_every_race(self) -> list[dict]:
+        races_summary = []
         #Had issues with trying to iterate over list normally with for loop, so reload the race list every time and access each race by index. Inefficient but it works fine
         for race_number in range(20):
             races = self.get_all_upcoming_races()
             self.wd.execute_script(CLICK, races[race_number])
-            #time.sleep(1) #It can go through every race in about 1 second if these sleeps are commented out. Pretty cool tbh
+            
+            race_summary = self.get_prices_from_race_page()
+            if race_summary:
+                races_summary.append(race_summary)
             self.wd.back()
-            #time.sleep(1)
+        
+        return races_summary
+
+    """
+    Starting with the webdriver on a race page, creates a dictionary of every horse name and its current starting price
+    """
+    def get_prices_from_race_page(self) -> dict:
+        horses = self.wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
+        prices = self.wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
+
+        race_summary = {}
+
+        #Shrink horse list to match number of prices to account for scratched horses
+        if len(prices) <= 4:
+            horses = horses[:len(prices)]
+        else:
+            horses = horses[:len(prices) // 2]
+        
+        for index, horse in enumerate(horses):
+            #Split the text into the horses number and the rest of the text on the first space
+            number, remainder = horse.text.split(" ", 1)
+            #Split once from the right to get gate separate from horse name. This avoids edge case where there are spaces in the horses name
+            horse_name, gate = remainder.rsplit(" ", 1)
+            gate = int(gate[1:-1])
+
+            #Get current price of horse. For some reason the div number seems to be separated by 6 each time starting from 4
+            number = str(index * 6 + 4)
+
+            #Need to handle exceptions as sometimes the races don't have prices? Probably a neat way to do this
+            try:
+                price = self.wd.find_element(By.XPATH, f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]")
+            except NoSuchElementException:
+                #If the element does not exist, skip this race
+                print("Exception, skipping this race")
+                break
+            
+            race_summary[(horse_name, gate)] = float(price.text)
+        return race_summary
 
 if __name__ == "__main__":
     load_dotenv()
     path = os.environ.get("PATH")
     browserController = BrowserController(path, URL)
-    #price = browserController.get_price()
-    #print(price)
-    #browserController.goto_first_race()
-    browserController.goto_every_race()
+    races_summary = browserController.goto_every_race()
+
+    print(races_summary)
     time.sleep(8)
