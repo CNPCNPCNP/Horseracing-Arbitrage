@@ -45,8 +45,14 @@ class Betfair_login():
         horse_racing_event_type_id = horse_racing_event_type.event_type.id
         return horse_racing_event_type_id
     """
-    interacts with the API to return the Aus horse races today
+    interacts with the API to return the Aus horse races today - currently not working exactly as i wanted it. 
     """
+    def aus_races_today(self):
+        horse_racing_event_type_id = self.horse_racing_event_id()
+        horse_racing_event_filter = betfairlightweight.filters.market_filter(event_type_ids=[horse_racing_event_type_id],
+        market_countries=['AU'], market_start_time={'to': (datetime.datetime.utcnow() + datetime.timedelta(days=1)).strftime("%Y-%m-%dT%TZ")})
+        aus_horse_events = self.trading.betting.list_events(filter= horse_racing_event_filter)
+        return(aus_horse_events)
 
 
 
@@ -57,10 +63,14 @@ class Betfair_login():
 #Below code is Ben playing around with betfair api before turning into more concrete class / methods above. 
 
 
-""" betfair = Betfair_login(certs_path, my_username, my_password, my_app_key)
+betfair = Betfair_login(certs_path, my_username, my_password, my_app_key)
 betfair.login()
 id = betfair.horse_racing_event_id()
+test = betfair.aus_races_today()
 print(id)
+print(test)
+
+""" 
 
 trading.login()
 
@@ -108,3 +118,4 @@ aus_thoroughbred_events_today """
 
 
 
+ """
