@@ -112,29 +112,22 @@ class BrowserController():
             race_summary[(horse_name, gate)] = float(price.text)
         return Race(race_location, race_number, race_summary)
 
-""" if __name__ == "__main__":
-    load_dotenv()
-    path = os.environ.get("PATH")
-    browserController = BrowserController(path, URL)
-    races_summary = browserController.goto_every_race()
-
-    print(races_summary)
-    time.sleep(8)
- """
-
 """
-Ben - my os.environ.get() function returned a very long string, where the real path was a subset of that string? 
-The below code worked for me but isn't very generalisable?
+Main execution point for program- may move to separate file later
 """
-if __name__ == "__main__":
+def main():
     load_dotenv()
     path = os.environ.get("PATH")
     path_list = path.split(';') # my function returns a super long string of other shit around the path. 
     if len(path_list) > 1:
-           path = path_list[1] # my real path was the second element when you split super long string by ';'.
+        path = path_list[1] # my real path was the second element when you split super long string by ';'.
     browserController = BrowserController(path, URL)
     races_summary = browserController.goto_every_race()
 
     print(races_summary)
     print(races_summary[0].shin_implied_odds())
     time.sleep(8)
+
+if __name__ == "__main__":
+    main()
+    
