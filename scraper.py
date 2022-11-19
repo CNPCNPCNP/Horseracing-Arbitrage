@@ -35,7 +35,7 @@ class BrowserController():
         return self.wd
 
     """
-    Gordon's method, currently not working. Probably can remove
+    Gordon's method, currently not working. Probably can remove but really shouldn't. Don't want to take away what little he has in these trying times. 
     """
     def get_price(self) -> float:
         #search = self.wd.find_element(By.CLASS_NAME, "bet-button-price")
