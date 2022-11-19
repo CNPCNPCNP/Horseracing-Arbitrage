@@ -9,7 +9,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
-
 #CONSTANTS. Use all capitals to define global constants please
 URL = 'https://betr.com.au/racebook#/racing/home/upcoming'
 CLICK = "arguments[0].click();"
@@ -29,11 +28,13 @@ class BrowserController():
         self.wd.implicitly_wait(2) # gives an implicit wait for 2 seconds
         self.wd.get(url)
 
+
     """
     Get the webdriver if it is needed outside this class
     """
     def get_webdriver(self) -> webdriver:
         return self.wd
+
 
     """
     Test method, currently unused
@@ -42,12 +43,14 @@ class BrowserController():
         next_race = self.wd.find_element(By.XPATH, '//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[1]')
         self.wd.execute_script(CLICK, next_race)
   
+  
     """
     Creates a list of every upcoming race from the upcoming races page on BETR. Hopefully classname doesn't change a lot or this will be a bad way to do it
     """
     def get_all_upcoming_races(self) -> list:
         races = self.wd.find_elements(By.CLASS_NAME, "RaceUpcoming_row__rS63w")
         return races
+
 
     """
     Goes to every race on the upcoming races page and then goes back
@@ -66,6 +69,7 @@ class BrowserController():
             self.wd.back()
         
         return races_summary
+
 
     """
     Starting with the webdriver on a race page, creates a dictionary of every horse name and its current starting price
@@ -117,6 +121,7 @@ class BrowserController():
     print(races_summary)
     time.sleep(8)
  """
+
 """
 Ben - my os.environ.get() function returned a very long string, where the real path was a subset of that string? 
 The below code worked for me but isn't very generalisable?

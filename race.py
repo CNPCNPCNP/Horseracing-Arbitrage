@@ -18,12 +18,14 @@ class Race():
     def get_horses(self) -> dict:
         return self._horses
 
+    def shin_implied_odds(self) -> list:
+        implied_odds = shin.calculate_implied_probabilities(self._horses.values())
+        return implied_odds
+
     def __repr__(self) -> str:
         return f"<{self.get_location()}, {self.get_race_number()}>"
 
     def __str__(self) -> str:
         return f"Race {self.get_race_number()} at {self.get_location()}\nHorses: \n{self.get_horses()}"
 
-    def shin_implied_odds(self) -> list:
-        implied_odds = shin.calculate_implied_probabilities(self._horses.values())
-        return implied_odds
+    

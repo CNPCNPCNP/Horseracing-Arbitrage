@@ -8,33 +8,30 @@ import datetime
 from dotenv import load_dotenv
 
 # Change file path to your own global variables file (mine wasn't working sorry and can't define it in the env file. 
-load_dotenv('C:\\Users\\bened\Documents\\Alameda-Project\\global_vars.env', override= True)
+load_dotenv('C:\\Users\\bened\Documents\\Alameda-Project\\global_vars.env', override = True)
 
 certs_path = os.environ.get("CERTS_PATH")
 my_username = os.environ.get("MY_USERNAME")
 my_password = os.environ.get("MY_PASSWORD")
 my_app_key = os.environ.get("MY_APP_KEY")
 
-class Betfair_login():
+class BetfairController():
     """
     Creates a login to betfair, allowing the user to interact with Betfairs API.
     """
-    def __init__(self,certs_path: str,my_username: str, my_password: str, my_app_key: str) -> None:
-        self.my_username = my_username
-        self.my_password = my_password
-        self.my_app_key = my_app_key
-        self.certs_path = certs_path
-        self.trading = betfairlightweight.APIClient(username = self.my_username,
-        password= self.my_password,
-        app_key= self.my_app_key,
-        certs= self.certs_path)
+    def __init__(self, certs_path: str, my_username: str, my_password: str, my_app_key: str) -> None:
+        self.trading = betfairlightweight.APIClient(username = my_username,
+                                                    password = my_password,
+                                                    app_key = my_app_key,
+                                                    certs = certs_path)
     
     """
-    Formally logs in and establishes a conenction with the API
+    Formally logs in and establishes a connection with the API
     """
-    def login(self):
+    def login(self) -> None:
         self.login = self.trading.login()
         return self.login
+
     """
     interacts with the API to return the horse racing event type id 
     """
@@ -44,6 +41,7 @@ class Betfair_login():
         horse_racing_event_type = horse_racing_event_type[0]
         horse_racing_event_type_id = horse_racing_event_type.event_type.id
         return horse_racing_event_type_id
+    
     """
     interacts with the API to return the Aus horse races today - currently not working exactly as i wanted it. 
     """
@@ -54,16 +52,8 @@ class Betfair_login():
         aus_horse_events = self.trading.betting.list_events(filter= horse_racing_event_filter)
         return(aus_horse_events)
 
-
-
-
-
-
-
 #Below code is Ben playing around with betfair api before turning into more concrete class / methods above. 
-
-
-betfair = Betfair_login(certs_path, my_username, my_password, my_app_key)
+betfair = BetfairController(certs_path, my_username, my_password, my_app_key)
 betfair.login()
 id = betfair.horse_racing_event_id()
 test = betfair.aus_races_today()
@@ -113,9 +103,3 @@ aus_thoroughbred_events_today = pd.DataFrame({
 })
 
 aus_thoroughbred_events_today """
-
-
-
-
-
- """
