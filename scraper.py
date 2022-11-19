@@ -125,11 +125,9 @@ if __name__ == "__main__":
     path = os.environ.get("PATH")
     path_list = path.split(';') # my function returns a super long string of other shit around the path. 
     if len(path_list) > 1:
-           path = path_list[1] # my real path was the second element split by ';'.
+           path = path_list[1] # my real path was the second element when you split super long string by ';'.
     browserController = BrowserController(path, URL)
     races_summary = browserController.goto_every_race()
 
     print(races_summary)
     time.sleep(8)
-
-

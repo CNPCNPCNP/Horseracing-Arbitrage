@@ -1,6 +1,7 @@
 """
 Store each race as a custom class
 """
+import shin
 class Race():
     def __init__(self, location: str, race_number: int, horses: dict) -> None:
         self._location = location
@@ -21,3 +22,7 @@ class Race():
 
     def __str__(self) -> str:
         return f"Race {self.get_race_number()} at {self.get_location()}\nHorses: \n{self.get_horses()}"
+
+    def shin_implied_odds(self) -> list:
+        implied_odds = shin.calculate_implied_probabilities(self._horses.values())
+        return implied_odds
