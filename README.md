@@ -5,7 +5,10 @@ Ensure that you create a .env file containing the path to your Chrome webdriver 
 
 Necessary:
 dotenv
-selenium 
+selenium
+betfairlightweight
+pandas
+numpy
 
 Optional (provides added functionality):
 shin

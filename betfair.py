@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 import datetime
+from race import Race
 from dotenv import load_dotenv
 
 # Change file path to your own global variables file (mine wasn't working sorry and can't define it in the env file. 
@@ -51,6 +52,10 @@ class BetfairController():
         market_countries=['AU'], market_start_time={'to': (datetime.datetime.utcnow() + datetime.timedelta(days=1)).strftime("%Y-%m-%dT%TZ")})
         aus_horse_events = self.trading.betting.list_events(filter= horse_racing_event_filter)
         return(aus_horse_events)
+
+    def get_race_id(self, race: Race):
+        
+        pass
 
 #Below code is Ben playing around with betfair api before turning into more concrete class / methods above. 
 betfair = BetfairController(certs_path, my_username, my_password, my_app_key)
