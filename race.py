@@ -2,6 +2,7 @@
 Store each race as a custom class
 """
 import shin
+
 class Race():
     def __init__(self, location: str, race_number: int, horses: dict) -> None:
         self._location = location
