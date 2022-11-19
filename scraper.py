@@ -53,6 +53,7 @@ class BrowserController():
     Goes to every race on the upcoming races page and then goes back
     """
     def goto_every_race(self) -> list[Race]:
+        self.wd.implicitly_wait(0.5)
         races_summary = []
         #Had issues with trying to iterate over list normally with for loop, so reload the race list every time and access each race by index. Inefficient but it works fine
         for race_number in range(20):
@@ -130,4 +131,5 @@ if __name__ == "__main__":
     races_summary = browserController.goto_every_race()
 
     print(races_summary)
+    print(races_summary[0].shin_implied_odds())
     time.sleep(8)
