@@ -3,9 +3,12 @@ import os
 
 from race import Race
 from dotenv import load_dotenv
+
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+
 
 #CONSTANTS. Use all capitals to define global constants please
 URL = 'https://betr.com.au/racebook#/racing/home/upcoming'
@@ -21,11 +24,9 @@ class BrowserController():
     variable setup in your .env file. If you need to access the webdriver outside this class, use the getter method get_webdriver
     """
     def __init__(self, path: str, url: str) -> None:
-        self.path = path
-
-        self.wd = webdriver.Chrome(path)
+        self.wd = webdriver.Chrome(service = Service(path))
         self.wd.maximize_window() # For maximizing window
-        self.wd.implicitly_wait(1) # gives an implicit wait for 20 seconds
+        self.wd.implicitly_wait(2) # gives an implicit wait for 2 seconds
         self.wd.get(url)
 
     """
@@ -33,14 +34,6 @@ class BrowserController():
     """
     def get_webdriver(self) -> webdriver:
         return self.wd
-
-    """
-    Gordon's method, currently not working. Probably can remove but really shouldn't. Don't want to take away what little he has in these trying times. 
-    """
-    def get_price(self) -> float:
-        #search = self.wd.find_element(By.CLASS_NAME, "bet-button-price")
-        price = self.wd.find_element(By.XPATH, "//*[@id="+'"'+'"bm-content"'+"]/div[2]/div/div[2]/div[2]/div[4]/button/div")
-        return price
 
     """
     Test method, currently unused
@@ -53,11 +46,7 @@ class BrowserController():
     Creates a list of every upcoming race from the upcoming races page on BETR. Hopefully classname doesn't change a lot or this will be a bad way to do it
     """
     def get_all_upcoming_races(self) -> list:
-        #First grab the container of all the races
-        races_container = self.wd.find_element(By.CLASS_NAME, "RaceUpcoming_grid__6YRbf")
-
-        #From container, get every child
-        races = races_container.find_elements(By.CLASS_NAME, "RaceUpcoming_row__rS63w")
+        races = self.wd.find_elements(By.CLASS_NAME, "RaceUpcoming_row__rS63w")
         return races
 
     """
@@ -102,10 +91,10 @@ class BrowserController():
             number, remainder = horse.text.split(" ", 1)
             #Split once from the right to get gate separate from horse name. This avoids edge case where there are spaces in the horses name
             horse_name, gate = remainder.rsplit(" ", 1)
-            gate = int(gate[1:-1])
+            gate = int(gate[1:-1]) #Remove brackets from gate
 
             #Get current price of horse. For some reason the div number seems to be separated by 6 each time starting from 4
-            number = str(index * 6 + 4)
+            number = index * 6 + 4
 
             #Need to handle exceptions as sometimes the races don't have prices? Probably a neater way to do this
             try:
