@@ -2,7 +2,7 @@ import time
 import os
 
 from constants import *
-from race import RaceType, Race
+from race import Race, RaceType
 from dotenv import load_dotenv
 
 from selenium import webdriver

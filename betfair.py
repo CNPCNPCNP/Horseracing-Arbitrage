@@ -1,11 +1,13 @@
 # Import libraries
 import betfairlightweight
 from betfairlightweight import filters
+from constants import *
 import pandas as pd
 import numpy as np
 import os
 import datetime
-from race import Race
+import re
+from race import Race, RaceType
 from dotenv import load_dotenv
 
 # Change file path to your own global variables file (mine wasn't working sorry and can't define it in the env file. 
@@ -30,8 +32,7 @@ class BetfairController():
     Formally logs in and establishes a connection with the API
     """
     def login(self) -> None:
-        self.login = self.trading.login()
-        return self.login
+        self.trading.login()
 
     """
     interacts with the API to return the horse racing event type id 
@@ -49,21 +50,68 @@ class BetfairController():
     def aus_races_today(self):
         horse_racing_event_type_id = self.horse_racing_event_id()
         horse_racing_event_filter = betfairlightweight.filters.market_filter(event_type_ids=[horse_racing_event_type_id],
-        market_countries=['AU'], market_start_time={'to': (datetime.datetime.utcnow() + datetime.timedelta(days=1)).strftime("%Y-%m-%dT%TZ")})
+                                                                             market_countries=['AU'], 
+                                                                             market_start_time={'to': (datetime.datetime.utcnow() + datetime.timedelta(days=1)).strftime("%Y-%m-%dT%TZ")})
         aus_horse_events = self.trading.betting.list_events(filter= horse_racing_event_filter)
         return(aus_horse_events)
 
-    def get_race_id(self, race: Race):
-        
+    """
+    Takes a venue as a string (eg. Flemington). Returns the event id of the first event at that venue, in most cases 
+    there should only be one event at a venue anyway. (event is different to market)
+    """
+    def get_event_id_for_venue(self, venue: str) -> int:
+        venue_filter = betfairlightweight.filters.market_filter(venues = [venue])
+        events = self.trading.betting.list_events(filter = venue_filter)
+        event_id = events[0].event.id
+        return event_id
+
+    """
+    Takes a venue as a string and returns a list of markets at that venue
+    """
+    def get_markets_at_venue(self, venue: str) -> list:
+        event_id = self.get_event_id_for_venue(venue)
+        market_catalogue_filter = betfairlightweight.filters.market_filter(event_ids = [event_id])
+        market_catalogues = self.trading.betting.list_market_catalogue(filter = market_catalogue_filter, 
+                                                                       max_results = 20)
+
+        #Filter out markets that aren't main race markets using regex (string pattern matching) on market_name
+        market_catalogues = [catalogue for catalogue in market_catalogues if re.match(WIN_MARKET_REGEX, catalogue.market_name.split(" ")[0])]
+        return market_catalogues
+
+    """
+    Takes a race object and returns a marketCatalogue (details about the market for that race) from betfair. If no
+    matching race found, returns None. May change logic for this to throw exception if race not found.
+    """
+    def get_market(self, race: Race):
+        venue = race.get_venue()
+        race_number = race.get_race_number()
+        market_catalogues = self.get_markets_at_venue(venue)
+        for market in market_catalogues:
+            market_race_number = int(market.market_name.split(" ")[0][1:])
+            if market_race_number == race_number:
+                return market
+        return None
+
+    """
+    Takes a market catalogue and returns a dictionary of all runners and their current back price
+    """
+    def get_back_odds(self, market):
         pass
 
-#Below code is Ben playing around with betfair api before turning into more concrete class / methods above. 
+
+# Below code is Ben playing around with betfair api before turning into more concrete class / methods above. 
 betfair = BetfairController(certs_path, my_username, my_password, my_app_key)
 betfair.login()
 id = betfair.horse_racing_event_id()
 test = betfair.aus_races_today()
 print(id)
 print(test)
+
+# Testing obtaining details about fake race and getting marketCatalogue object from betfair API. Change race number (int)
+# and venue name to find different races.
+test_race = Race("Albion Park", 8, {}, RaceType.GREYHOUND_RACE)
+market = betfair.get_market(test_race)
+print(market.market_name, market.market_id)
 
 """ 
 
