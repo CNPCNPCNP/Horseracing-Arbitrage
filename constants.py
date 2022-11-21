@@ -29,7 +29,7 @@ VENUES = {# Greyhound races
           "Nottingham Bags": "Nottingham",
           "Romford": "Romford",
           "Towcester Bags": "Towcester",
-          "Albion Park": "Albion Park",
+          "Albion Park": "Albion Park", # Both greyhounds and trots at Albion Park? Maybe need more logic to handle edge cases
           # Trots
           "Pinjarra": "Pinjarra",
           "Mildura": "Mildura",
