@@ -74,7 +74,8 @@ class BetfairController():
         market_catalogues = self.trading.betting.list_market_catalogue(filter = market_catalogue_filter, 
                                                                        max_results = 20)
 
-        #Filter out markets that aren't main race markets using regex (string pattern matching) on market_name
+        # Filter out markets that aren't main race markets using regex (string pattern matching) on market_name\
+        # Not the most effective, sometimes names don't match necessarily
         market_catalogues = [catalogue for catalogue in market_catalogues if re.match(WIN_MARKET_REGEX, catalogue.market_name.split(" ")[0])]
         return market_catalogues
 

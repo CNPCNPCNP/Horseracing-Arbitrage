@@ -8,3 +8,41 @@ HORSE_ICON = 'M13.1346'
 TROT_ICON = 'M14.9389'
 GREYHOUND_ICON = 'M2.73859'
 WIN_MARKET_REGEX = re.compile(r'^R\d+$')
+
+#First value is BETR venue name, second value is betfair venue name
+VENUES = {# Greyhound races
+          "Gunnedah": "Gunnedah",
+          "Nowra": "Nowra",
+          "Warrnambool": "Warrnambool",
+          "Maitland": "Maitland",
+          "Angle Park": "Angle Park",
+          "Central Park Bags": "Central Park",
+          "Suffolk Downs Am": "Suffolk Downs",
+          "Perry Bar Bags": "Perry Barr",
+          "Swindon Bags": "Swindon",
+          "Sheffield Bags": "Sheffield",
+          "Doncaster": "Doncaster",
+          "Yarmouth Bags": "Yarmouth",
+          "Nottingham Bags": "Nottingham",
+          "Romford": "Romford",
+          "Towcester Bags": "Towcester",
+          
+          # Trots
+          "Pinjarra": "Pinjarra",
+          "Mildura": "Mildura",
+          
+          # Horse races
+          "Geelong": "Geelong", # may need to be careful with this one, seen greyhounds at geelong
+          "Murwillumbah": "Murwillumbah",
+          "Newcastle": "Newcastle",
+          "Le Croise Laroc": "Le Croise-Laroche",
+          "Southwell": "Southwell",
+          "Finger Lakes": "Finger Lakes",
+          "Ludlow": "Ludlow",
+          "Sedgefield": "Sedgefield",
+          "Remington Park": "Remington Park",
+          "Turf Paradise": "Turf Paradise",
+          "Zia Park": "Zia Park",
+          "Laurel Park": "Laurel Park",
+          "Philadelphia Park": "Philadelphia"
+          }

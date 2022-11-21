@@ -5,6 +5,7 @@ from constants import *
 from race import Race, RaceType
 from dotenv import load_dotenv
 
+from betfair import BetfairController
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -137,6 +138,9 @@ def main():
 
     print(races_summary)
     print(races_summary[0].shin_implied_odds())
+    
+
+
     time.sleep(8)
 
 if __name__ == "__main__":
