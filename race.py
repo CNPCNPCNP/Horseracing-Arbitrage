@@ -11,10 +11,11 @@ class RaceType(Enum):
     UNKNOWN_RACE = 3
 
 class Race():
-    def __init__(self, venue: str, race_number: int, horses: dict, type: RaceType) -> None:
+    def __init__(self, venue: str, race_number: int, horses: dict, url: str, type: RaceType) -> None:
         self._venue = venue
         self._race_number = race_number
         self._horses = horses
+        self._url = url
         self._type = type
     
     def get_venue(self) -> str:
@@ -26,8 +27,14 @@ class Race():
     def get_horses(self) -> dict:
         return self._horses
 
+    def get_url(self) -> str:
+        return self._url
+
     def get_type(self) -> str:
         return self._type
+
+    def valid_race(self) -> bool:
+        return self._venue and self._race_number and self._horses and self._url
 
     def shin_implied_odds(self) -> list:
         implied_odds = shin.calculate_implied_probabilities(self._horses.values())

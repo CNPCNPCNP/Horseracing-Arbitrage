@@ -97,22 +97,30 @@ class BetfairController():
     Takes a market catalogue and returns a dictionary of all runners and their current back price
     """
     def get_back_odds(self, market):
-        pass
+        # Get first element, as we should only be returning one market book
+        market_book = self.trading.betting.list_market_book(market_ids = [market.market_id], 
+                                                            price_projection = PRICE_PROJECTION)[0]
+        print(market_book)
+        print(market_book.runners)
+        for runner in market_book.runners:
+            print(runner.selection_id)
+            
 
 
-# Below code is Ben playing around with betfair api before turning into more concrete class / methods above. 
+# # Below code is Ben playing around with betfair api before turning into more concrete class / methods above. 
 betfair = BetfairController(certs_path, my_username, my_password, my_app_key)
 betfair.login()
-id = betfair.horse_racing_event_id()
-test = betfair.aus_races_today()
-print(id)
-print(test)
+# id = betfair.horse_racing_event_id()
+# test = betfair.aus_races_today()
+# print(id)
+# print(test)
 
 # Testing obtaining details about fake race and getting marketCatalogue object from betfair API. Change race number (int)
 # and venue name to find different races.
-test_race = Race("Albion Park", 8, {}, RaceType.GREYHOUND_RACE)
+test_race = Race("Albion Park", 1, {}, "", RaceType.GREYHOUND_RACE)
 market = betfair.get_market(test_race)
 print(market.market_name, market.market_id)
+betfair.get_back_odds(market)
 
 """ 
 

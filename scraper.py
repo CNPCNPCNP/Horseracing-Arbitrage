@@ -52,7 +52,7 @@ class BrowserController():
     Goes to every race on the upcoming races page and then goes back
     """
     def goto_every_race(self) -> list[Race]:
-        self.wd.implicitly_wait(0.5)
+        self.wd.implicitly_wait(1)
         races_summary = []
         # Had issues with trying to iterate over list normally with for loop, so reload the race list every time and 
         # access each race by index. Inefficient but it works fine
@@ -61,7 +61,7 @@ class BrowserController():
             self.wd.execute_script(CLICK, races[race_number])
             
             race_summary = self.get_prices_from_race_page()
-            if race_summary.get_horses():
+            if race_summary.valid_race():
                 races_summary.append(race_summary)
             self.wd.back()
         
@@ -76,8 +76,17 @@ class BrowserController():
 
         # Race name is location + race number
         venue = self.wd.find_element(By.XPATH, '//*[@id="bm-content"]/div[2]/div/div[1]/ul/li[2]/a').text
-        race_number = int(self.wd.find_element(By.XPATH, '//*[@id="bm-content"]/div[2]/div/div[1]/ul/li[3]/a').text.split(" ")[-1])
+        venue = VENUES.get(venue) # Gives us None if no equivalent venue on betfair
+        try:
+            race_number = int(self.wd.find_element(By.XPATH, '//*[@id="bm-content"]/div[2]/div/div[1]/ul/li[3]/a').text.split(" ")[-1])
+        except NoSuchElementException:
+            print("Unable to determine race number")
+            race_number = 0 # Use sentinel value of 0 for races where we can't determine number, will skip matching later
+
         print(venue, race_number)
+
+        # Get url so we can access the race later to bet
+        url = self.wd.current_url
         
         # Can extract SVG (icon) to get type of race. Annoyingly no text on page stating race type so this method is 
         # overly complex
@@ -118,11 +127,11 @@ class BrowserController():
                 price = self.wd.find_element(By.XPATH, f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]")
             except NoSuchElementException:
                 #If the element does not exist, skip this race
-                print("Exception, skipping this race")
+                print("No race prices")
                 break
             
             race_summary[(horse_name, gate)] = float(price.text)
-        return Race(venue, race_number, race_summary, race_type)
+        return Race(venue, race_number, race_summary, url, race_type)
 
 """
 Main execution point for program- may move to separate file later
@@ -130,6 +139,11 @@ Main execution point for program- may move to separate file later
 def main():
     load_dotenv()
     path = os.environ.get("PATH")
+    certs_path = os.environ.get("CERTS_PATH")
+    my_username = os.environ.get("MY_USERNAME")
+    my_password = os.environ.get("MY_PASSWORD")
+    my_app_key = os.environ.get("MY_APP_KEY")
+
     path_list = path.split(';') # my function returns a super long string of other shit around the path. 
     if len(path_list) > 1:
         path = path_list[1] # my real path was the second element when you split super long string by ';'.
@@ -138,9 +152,13 @@ def main():
 
     print(races_summary)
     print(races_summary[0].shin_implied_odds())
-    
 
-
+    better = BetfairController(certs_path, my_username, my_password, my_app_key)
+    better.login()
+    for race in races_summary:
+        market = better.get_market(race)
+        if market:
+            print(market.market_name)
     time.sleep(8)
 
 if __name__ == "__main__":
