@@ -12,34 +12,24 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
 """
-Main controller class for webdriver and associated methods
+Main controller class for building our list of races
 """
-class BrowserController():
+class RaceBuilder():
 
     """
     Creates a browser controller with the associated webdriver and URL path. Use self.wd inside this class to access 
     webdriver. Takes path as an input, so make sure you have the PATH variable setup in your .env file. If you need to 
-    access the webdriver outside this class, use the getter method get_webdriver
+    access the webdriver outside this class, use the getter method get_webdriver. Uses betfair controller to get the
+    market id and betfair url for each race as well.
     """
-    def __init__(self, path: str, url: str) -> None:
+    def __init__(self, path: str, url: str, betfair_controller: BetfairController) -> None:
         self.wd = webdriver.Chrome(service = Service(path))
         self.url = url
         self.wd.maximize_window() # For maximizing window
         self.wd.implicitly_wait(3) # gives an implicit wait for 2 seconds
         self.wd.get(url)
 
-    """
-    Get the webdriver if it is needed outside this class
-    """
-    def get_webdriver(self) -> webdriver:
-        return self.wd
-
-    """
-    Test method, currently unused
-    """
-    def goto_first_race(self) -> None:
-        next_race = self.wd.find_element(By.XPATH, '//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[1]')
-        self.wd.execute_script(CLICK, next_race)
+        self.betfair_controller = betfair_controller
 
     """
     Creates a list of every upcoming race from the upcoming races page on BETR. Hopefully classname doesn't change a lot 
@@ -135,36 +125,4 @@ class BrowserController():
             
             race_summary[(horse_name, gate, horse_number)] = float(price.text)
         return Race(venue, race_number, race_summary, url, race_type)
-
-"""
-Main execution point for program- may move to separate file later
-"""
-def main():
-    load_dotenv()
-    path = os.environ.get("PATH")
-    certs_path = os.environ.get("CERTS_PATH")
-    my_username = os.environ.get("MY_USERNAME")
-    my_password = os.environ.get("MY_PASSWORD")
-    my_app_key = os.environ.get("MY_APP_KEY")
-
-    path_list = path.split(';') # my function returns a super long string of other shit around the path. 
-    if len(path_list) > 1:
-        path = path_list[1] # my real path was the second element when you split super long string by ';'.
-    browserController = BrowserController(path, URL)
-    races_summary = browserController.goto_every_race()
-
-    print(races_summary)
-    print(races_summary[0].shin_implied_odds())
-
-    better = BetfairController(certs_path, my_username, my_password, my_app_key)
-    better.login()
-    for race in races_summary:
-        market = better.get_market(race)
-        if market:
-            print(market.market_name)
-    time.sleep(8)
-
-if __name__ == "__main__":
-    #main()
-    pass
     

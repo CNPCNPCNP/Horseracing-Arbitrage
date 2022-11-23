@@ -9,8 +9,7 @@ HORSE_ICON = 'M13.1346'
 TROT_ICON = 'M14.9389'
 GREYHOUND_ICON = 'M2.73859'
 WIN_MARKET_REGEX = re.compile(r'^R\d+$')
-PRICE_PROJECTION = filters.price_projection(price_data = filters.price_data(ex_best_offers=True)
-        )
+PRICE_PROJECTION = filters.price_projection(price_data = filters.price_data(ex_best_offers=True))
 
 #First value is BETR venue name, second value is betfair venue name
 VENUES = {# Greyhound races
