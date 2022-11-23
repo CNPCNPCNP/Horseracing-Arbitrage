@@ -45,15 +45,27 @@ class Betfair_login():
         horse_racing_event_type_id = horse_racing_event_type.event_type.id
         return horse_racing_event_type_id
     """
-    interacts with the API to return the Aus horse races today - currently not working exactly as i wanted it. 
+    interacts with the API to return the Aus horse races today.
     """
     def aus_races_today(self):
         horse_racing_event_type_id = self.horse_racing_event_id()
         horse_racing_event_filter = betfairlightweight.filters.market_filter(event_type_ids=[horse_racing_event_type_id],
         market_countries=['AU'], market_start_time={'to': (datetime.datetime.utcnow() + datetime.timedelta(days=1)).strftime("%Y-%m-%dT%TZ")})
         aus_horse_events = self.trading.betting.list_events(filter= horse_racing_event_filter)
-        return(aus_horse_events)
 
+        # Create a DataFrame with all the events by iterating over each event object
+        aus_horse_events_today = pd.DataFrame({
+        'Event Name': [event_object.event.name for event_object in aus_horse_events],
+        'Event ID': [event_object.event.id for event_object in aus_horse_events],
+        'Event Venue': [event_object.event.venue for event_object in aus_horse_events],
+        'Country Code': [event_object.event.country_code for event_object in aus_horse_events],
+        'Time Zone': [event_object.event.time_zone for event_object in aus_horse_events],
+        'Open Date': [event_object.event.open_date for event_object in aus_horse_events],
+        'Market Count': [event_object.market_count for event_object in aus_horse_events]})
+        return(aus_horse_events_today)
+    """
+    interacts with the API to return 
+    """
 
 
 
@@ -69,6 +81,7 @@ id = betfair.horse_racing_event_id()
 test = betfair.aus_races_today()
 print(id)
 print(test)
+test[2]
 
 """ 
 
@@ -118,4 +131,3 @@ aus_thoroughbred_events_today """
 
 
 
- """
