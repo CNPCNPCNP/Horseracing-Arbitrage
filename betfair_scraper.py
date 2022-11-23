@@ -79,3 +79,13 @@ class BetfairRaceScraper():
 
     def refresh(self) -> None:
         self.wd.execute_script(CLICK, self.refresh_button)
+
+import time
+path = "C:\Program Files (x86)\chromedriver.exe"
+url = "https://www.betfair.com.au/exchange/plus/horse-racing/market/1.206747616"
+test = BetfairRaceScraper(path, url)
+
+while True:
+    print(test.get_lay_prices_horses())
+    test.refresh()
+    time.sleep(1)
