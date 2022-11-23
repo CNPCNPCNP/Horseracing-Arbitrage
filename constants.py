@@ -30,9 +30,27 @@ VENUES = {# Greyhound races
           "Romford": "Romford",
           "Towcester Bags": "Towcester",
           "Albion Park": "Albion Park", # Both greyhounds and trots at Albion Park? Maybe need more logic to handle edge cases
+          "Warragul": "Warragul",
+          "Grafton": "Grafton",
+          "Gosford": "Gosford",
+          "Taree": "Taree",
+          "Gawler": "Gawler",
+          "Manawatu": "Manawatu",
+          "Capalaba": "Capalaba",
+          "The Meadows": "The Meadows",
+          "Richmond": "Richmond",
+
           # Trots
           "Pinjarra": "Pinjarra",
           "Mildura": "Mildura",
+          "Bendigo": "Bendigo",
+          "Globe Derby": "Globe Derby",
+          "Wagga": "Wagga",
+          "Hamilton": "Hamilton",
+          "Ascot Park": "Ascot Park",
+          "Bunbury": "Bunbury",
+          "Hamilton": "Hamilton",
+          
           
           # Horse races
           "Geelong": "Geelong", # may need to be careful with this one, seen greyhounds at geelong
@@ -47,5 +65,12 @@ VENUES = {# Greyhound races
           "Turf Paradise": "Turf Paradise",
           "Zia Park": "Zia Park",
           "Laurel Park": "Laurel Park",
-          "Philadelphia Park": "Philadelphia"
+          "Philadelphia Park": "Philadelphia",
+          "Sandown": "Sandown",
+          "Penn National": "Penn National",
+          "Mountaineer Park": "Mountaineer Park",
+          "Avondale": "Avondale",
+          "Doomben": "Doomben",
+          "Balaklava": "Balaklava",
+          "Warwick Farm": "Warwick Farm",
           }

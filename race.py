@@ -33,6 +33,9 @@ class Race():
     def get_type(self) -> str:
         return self._type
 
+    def set_horses(self, horses: dict) -> None:
+        self._horses = horses
+
     def valid_race(self) -> bool:
         return self._venue and self._race_number and self._horses and self._url
 
@@ -44,4 +47,15 @@ class Race():
         return f"<{self.get_venue()}, {self.get_race_number()}, {self.get_type()}>"
 
     def __str__(self) -> str:
-        return f"Race {self.get_race_number()} at {self.get_venue()}\nHorses: \n{self.get_horses()}"
+        return f"Race {self.get_race_number()} at {self.get_venue()}\nRunners: \n{self.get_horses()}"
+
+    def __hash__(self) -> int:
+        return hash(self._url)
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, Race):
+            return self.get_url() == other.get_url()
+        return False
+
+    def __ne__(self, other) -> bool:
+        return not (self == other)

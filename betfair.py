@@ -108,8 +108,8 @@ class BetfairController():
 
 
 # # Below code is Ben playing around with betfair api before turning into more concrete class / methods above. 
-betfair = BetfairController(certs_path, my_username, my_password, my_app_key)
-betfair.login()
+# betfair = BetfairController(certs_path, my_username, my_password, my_app_key)
+# betfair.login()
 # id = betfair.horse_racing_event_id()
 # test = betfair.aus_races_today()
 # print(id)
@@ -117,10 +117,10 @@ betfair.login()
 
 # Testing obtaining details about fake race and getting marketCatalogue object from betfair API. Change race number (int)
 # and venue name to find different races.
-test_race = Race("Albion Park", 1, {}, "", RaceType.GREYHOUND_RACE)
-market = betfair.get_market(test_race)
-print(market.market_name, market.market_id)
-betfair.get_back_odds(market)
+# test_race = Race("Albion Park", 1, {}, "", RaceType.GREYHOUND_RACE)
+# market = betfair.get_market(test_race)
+# print(market.market_name, market.market_id)
+# betfair.get_back_odds(market)
 
 """ 
 

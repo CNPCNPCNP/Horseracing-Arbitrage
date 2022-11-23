@@ -23,8 +23,9 @@ class BrowserController():
     """
     def __init__(self, path: str, url: str) -> None:
         self.wd = webdriver.Chrome(service = Service(path))
+        self.url = url
         self.wd.maximize_window() # For maximizing window
-        self.wd.implicitly_wait(2) # gives an implicit wait for 2 seconds
+        self.wd.implicitly_wait(3) # gives an implicit wait for 2 seconds
         self.wd.get(url)
 
     """
@@ -49,22 +50,24 @@ class BrowserController():
         return races
 
     """
-    Goes to every race on the upcoming races page and then goes back
+    Goes to every race on the upcoming races page and then returns a list of Races and their details
     """
     def goto_every_race(self) -> list[Race]:
         self.wd.implicitly_wait(1)
         races_summary = []
+        index = 0
         # Had issues with trying to iterate over list normally with for loop, so reload the race list every time and 
         # access each race by index. Inefficient but it works fine
-        for race_number in range(20):
+        while len(races_summary) < 5 and index < 20:
             races = self.get_all_upcoming_races()
-            self.wd.execute_script(CLICK, races[race_number])
+            self.wd.execute_script(CLICK, races[index])
             
             race_summary = self.get_prices_from_race_page()
             if race_summary.valid_race():
                 races_summary.append(race_summary)
             self.wd.back()
-        
+            index += 1
+        self.wd.get(self.url)
         return races_summary
 
     """
@@ -83,7 +86,7 @@ class BrowserController():
             print("Unable to determine race number")
             race_number = 0 # Use sentinel value of 0 for races where we can't determine number, will skip matching later
 
-        print(venue, race_number)
+        #print(venue, race_number)
 
         # Get url so we can access the race later to bet
         url = self.wd.current_url
@@ -113,7 +116,7 @@ class BrowserController():
         
         for index, horse in enumerate(horses):
             #Split the text into the horses number and the rest of the text on the first space
-            number, remainder = horse.text.split(" ", 1)
+            horse_number, remainder = horse.text.split(" ", 1)
             # Split once from the right to get gate separate from horse name. This avoids edge case where there are 
             # spaces in the horses name
             horse_name, gate = remainder.rsplit(" ", 1)
@@ -130,7 +133,7 @@ class BrowserController():
                 print("No race prices")
                 break
             
-            race_summary[(horse_name, gate)] = float(price.text)
+            race_summary[(horse_name, gate, horse_number)] = float(price.text)
         return Race(venue, race_number, race_summary, url, race_type)
 
 """
@@ -162,5 +165,6 @@ def main():
     time.sleep(8)
 
 if __name__ == "__main__":
-    main()
+    #main()
+    pass
     
