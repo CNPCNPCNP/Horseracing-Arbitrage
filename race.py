@@ -9,7 +9,6 @@ class RaceType(Enum):
     HORSE_RACE = 1
     GREYHOUND_RACE = 2
     TROT_RACE = 3
-    
 
 class Race():
     def __init__(self, venue: str, race_number: int, horses: dict, url: str, type: RaceType) -> None:
@@ -47,9 +46,9 @@ class Race():
     def set_market_id(self, market_id: int) -> None:
         self._market_id = market_id
         if self.get_type() == RaceType.GREYHOUND_RACE:
-            self._betfair_url = "https://www.betfair.com.au/exchange/plus/greyhound-racing/market/{market_id}"
+            self._betfair_url = f"https://www.betfair.com.au/exchange/plus/greyhound-racing/market/{market_id}"
         else:
-            self._betfair_url = "https://www.betfair.com.au/exchange/plus/horse-racing/market/{market_id}"
+            self._betfair_url = f"https://www.betfair.com.au/exchange/plus/horse-racing/market/{market_id}"
 
     def set_horses(self, horses: dict) -> None:
         self._horses = horses

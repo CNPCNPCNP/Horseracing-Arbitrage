@@ -7,7 +7,7 @@ from constants import *
 
 from race import Race, RaceType
 
-class BetfairController():
+class BetfairAPIController():
     """
     Creates a login to betfair, allowing the user to interact with Betfairs API.
     """

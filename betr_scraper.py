@@ -1,6 +1,3 @@
-import time
-import os
-
 from constants import *
 from race import Race, RaceType
 from dotenv import load_dotenv
@@ -46,7 +43,7 @@ class RaceBuilder():
         # Had issues with trying to iterate over list normally with for loop, so reload the race list every time and 
         # access each race by index. Inefficient but it works fine. Only scraping 5 races at this stage, may scrape more
         # if this approach is successful.
-        while len(races) < 5 and index < 20:
+        while len(races) < 1 and index < 20:
             races_links = self.get_all_upcoming_races()
             self.wd.execute_script(CLICK, races_links[index])
             
@@ -55,7 +52,6 @@ class RaceBuilder():
                 races.append(race)
             self.wd.back()
             index += 1
-        self.wd.get(self.url)
         return races
 
     """
@@ -117,6 +113,6 @@ class RaceBuilder():
                 #If the element does not exist, skip this race
                 break
             
-            race_summary[(horse_name, gate, horse_number)] = float(price.text)
+            race_summary[horse_name] = float(price.text)
         return Race(venue, race_number, race_summary, url, race_type)
     
