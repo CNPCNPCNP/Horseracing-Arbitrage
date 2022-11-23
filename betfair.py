@@ -24,6 +24,12 @@ class BetfairController():
         self.trading.login()
 
     """
+    Refreshes our session with betfair so we don't get booted out
+    """
+    def keep_alive(self) -> None:
+        self.trading.keep_alive()
+
+    """
     Takes a venue as a string (eg. Flemington). Returns the event id of the first event at that venue, in most cases 
     there should only be one event at a venue anyway. (event is different to market)
     """

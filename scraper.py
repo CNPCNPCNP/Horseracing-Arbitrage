@@ -5,7 +5,6 @@ from constants import *
 from race import Race, RaceType
 from dotenv import load_dotenv
 
-from betfair import BetfairController
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -22,14 +21,12 @@ class RaceBuilder():
     access the webdriver outside this class, use the getter method get_webdriver. Uses betfair controller to get the
     market id and betfair url for each race as well.
     """
-    def __init__(self, path: str, url: str, betfair_controller: BetfairController) -> None:
+    def __init__(self, path: str, url: str) -> None:
         self.wd = webdriver.Chrome(service = Service(path))
         self.url = url
         self.wd.maximize_window() # For maximizing window
         self.wd.implicitly_wait(3) # gives an implicit wait for 2 seconds
         self.wd.get(url)
-
-        self.betfair_controller = betfair_controller
 
     """
     Creates a list of every upcoming race from the upcoming races page on BETR. Hopefully classname doesn't change a lot 
@@ -44,21 +41,22 @@ class RaceBuilder():
     """
     def goto_every_race(self) -> list[Race]:
         self.wd.implicitly_wait(1)
-        races_summary = []
+        races = []
         index = 0
         # Had issues with trying to iterate over list normally with for loop, so reload the race list every time and 
-        # access each race by index. Inefficient but it works fine
-        while len(races_summary) < 5 and index < 20:
-            races = self.get_all_upcoming_races()
-            self.wd.execute_script(CLICK, races[index])
+        # access each race by index. Inefficient but it works fine. Only scraping 5 races at this stage, may scrape more
+        # if this approach is successful.
+        while len(races) < 5 and index < 20:
+            races_links = self.get_all_upcoming_races()
+            self.wd.execute_script(CLICK, races_links[index])
             
-            race_summary = self.get_prices_from_race_page()
-            if race_summary.valid_race():
-                races_summary.append(race_summary)
+            race = self.get_prices_from_race_page()
+            if race.valid_race():
+                races.append(race)
             self.wd.back()
             index += 1
         self.wd.get(self.url)
-        return races_summary
+        return races
 
     """
     Starting with the webdriver on a race page, creates a dictionary of every horse name and its current starting price
@@ -76,8 +74,6 @@ class RaceBuilder():
             print("Unable to determine race number")
             race_number = 0 # Use sentinel value of 0 for races where we can't determine number, will skip matching later
 
-        #print(venue, race_number)
-
         # Get url so we can access the race later to bet
         url = self.wd.current_url
         
@@ -92,7 +88,6 @@ class RaceBuilder():
             else:
                 race_type = RaceType.GREYHOUND_RACE
         except NoSuchElementException:
-            print("Unable to determine race type")
             race_icon = None
             race_type = RaceType.UNKNOWN_RACE
 
@@ -120,7 +115,6 @@ class RaceBuilder():
                 price = self.wd.find_element(By.XPATH, f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]")
             except NoSuchElementException:
                 #If the element does not exist, skip this race
-                print("No race prices")
                 break
             
             race_summary[(horse_name, gate, horse_number)] = float(price.text)
