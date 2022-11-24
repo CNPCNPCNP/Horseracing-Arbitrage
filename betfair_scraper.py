@@ -13,7 +13,7 @@ class BetfairRaceScraper():
         self.wd = uc.Chrome()
         self.url = url
         self.wd.maximize_window()
-        self.wd.implicitly_wait(5)
+        self.wd.implicitly_wait(8)
         self.wd.get(url)
 
         self.username = self.wd.find_element(By.XPATH, '//*[@id="ssc-liu"]')

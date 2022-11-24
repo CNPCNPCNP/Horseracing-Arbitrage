@@ -26,14 +26,14 @@ class Application():
 
     """
     Builds our application using a given BetfairController and creates a RaceBuilder using the given path and the
-    constant URL.
+    constant URL. Set the races parameter to scan more races at a time. 
     """
-    def __init__(self, path: str, betfair: BetfairAPIController, username: str, password: str) -> None:
+    def __init__(self, path: str, betfair: BetfairAPIController, username: str, password: str, races: int) -> None:
         self.path = path
         self.username = username
         self.password = password
 
-        self.race_builder = RaceBuilder(self.path, URL, 2)
+        self.race_builder = RaceBuilder(self.path, URL, races)
         self.betfair_controller = betfair
         self.betfair_controller.login()
 
@@ -98,7 +98,7 @@ class Application():
                 print("Race closed")
                 return False
             race_summary[horse_name] = float(price.text)
-        race.set_horses(race_summary)
+        race.set_betr_prices(race_summary)
         return True
 
     """
@@ -117,6 +117,8 @@ class Application():
     
         wd.implicitly_wait(1)
         while self.get_race_data(wd, race): # If method returns False, thread should close
+            if race.check_betfair_prices():
+                print(race.compare_prices())
             time.sleep(1) # Poll race data every 1 second
         event.clear()
         self.races.remove(race) # Remove race from races when completed
@@ -139,9 +141,8 @@ class Application():
             lay_price_method = scraper.get_lay_prices_dogs
         while event.is_set(): # If method returns False, thread should close
             scraper.refresh()
-            print(lay_price_method())
+            race.set_betfair_prices(lay_price_method())
             time.sleep(1) # Poll race data every 1 second
-
 
 """
 Main entry point for application logic. 
@@ -154,9 +155,10 @@ def main() -> None:
     my_username = os.environ.get("MY_USERNAME")
     my_password = os.environ.get("MY_PASSWORD")
     my_app_key = os.environ.get("MY_APP_KEY")
+    races = int(os.environ.get("RACES"))
 
     betfair = BetfairAPIController(certs_path, my_username, my_password, my_app_key)
-    app = Application(path, betfair, my_username, my_password)
+    app = Application(path, betfair, my_username, my_password, races)
     while True:
         time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
                        # do so maybe it doesn't matter.
