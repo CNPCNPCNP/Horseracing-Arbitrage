@@ -12,3 +12,5 @@ numpy
 
 Optional (provides added functionality):
 shin
+
+Run application.py to use this project.

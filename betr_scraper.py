@@ -16,14 +16,17 @@ class RaceBuilder():
     Creates a browser controller with the associated webdriver and URL path. Use self.wd inside this class to access 
     webdriver. Takes path as an input, so make sure you have the PATH variable setup in your .env file. If you need to 
     access the webdriver outside this class, use the getter method get_webdriver. Uses betfair controller to get the
-    market id and betfair url for each race as well.
+    market id and betfair url for each race as well. Races specifies the number of races to track. Tracking more races
+    uses more threads
     """
-    def __init__(self, path: str, url: str) -> None:
+    def __init__(self, path: str, url: str, races: int) -> None:
         self.wd = webdriver.Chrome(service = Service(path))
         self.url = url
         self.wd.maximize_window() # For maximizing window
         self.wd.implicitly_wait(3) # gives an implicit wait for 2 seconds
         self.wd.get(url)
+
+        self.races = races
 
     """
     Creates a list of every upcoming race from the upcoming races page on BETR. Hopefully classname doesn't change a lot 
@@ -43,7 +46,7 @@ class RaceBuilder():
         # Had issues with trying to iterate over list normally with for loop, so reload the race list every time and 
         # access each race by index. Inefficient but it works fine. Only scraping 5 races at this stage, may scrape more
         # if this approach is successful.
-        while len(races) < 1 and index < 20:
+        while len(races) < self.races and index < 20:
             races_links = self.get_all_upcoming_races()
             self.wd.execute_script(CLICK, races_links[index])
             

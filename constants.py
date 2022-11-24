@@ -39,6 +39,8 @@ VENUES = {# Greyhound races
           "The Meadows": "The Meadows",
           "Richmond": "Richmond",
           "Traralgon": "Traralgon",
+          "Addington": "Addington",
+          
 
           # Trots
           "Pinjarra": "Pinjarra",
@@ -53,6 +55,11 @@ VENUES = {# Greyhound races
           "Swan Hill": "Swan Hill",
           "Bathurst": "Bathurst",
           "Redcliffe": "Redcliffe",
+          "Melton": "Melton",
+          "Alexandra Park": "Alexandra Park",
+          "Melton": "Melton",
+
+
           
           # Horse races
           "Geelong": "Geelong", # may need to be careful with this one, seen greyhounds at geelong
@@ -76,5 +83,10 @@ VENUES = {# Greyhound races
           "Balaklava": "Balaklava",
           "Warwick Farm": "Warwick Farm",
           "Launceston": "Launceston",
-          "Belmont": "Belmont"
+          "Narromine": "Narromine",
+          "Belmont": "Belmont",
+          "Northam": "Northam",
+          "Wyong": "Wyong",
+          "Cairns": "Cairns",
+
           }

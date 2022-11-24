@@ -28,10 +28,12 @@ class Application():
     Builds our application using a given BetfairController and creates a RaceBuilder using the given path and the
     constant URL.
     """
-    def __init__(self, path: str, betfair: BetfairAPIController) -> None:
+    def __init__(self, path: str, betfair: BetfairAPIController, username: str, password: str) -> None:
         self.path = path
+        self.username = username
+        self.password = password
 
-        self.race_builder = RaceBuilder(self.path, URL)
+        self.race_builder = RaceBuilder(self.path, URL, 2)
         self.betfair_controller = betfair
         self.betfair_controller.login()
 
@@ -125,11 +127,10 @@ class Application():
     of two browser windows per race (over complicated I know)
     """
     def start_betfair_thread(self, race: Race, event: threading.Event) -> None:
-        scraper = BetfairRaceScraper(self.path, race.get_betfair_url())
+        scraper = BetfairRaceScraper(self.path, race.get_betfair_url(), self.username, self.password)
         self.betfair_update(race, scraper, event)
 
     def betfair_update(self, race: Race, scraper: BetfairRaceScraper, event: threading.Event) -> None:
-        scraper.set_implicit_wait(1)
         if race.get_type() == RaceType.HORSE_RACE:
             lay_price_method = scraper.get_lay_prices_horses
         elif race.get_type() == RaceType.TROT_RACE:
@@ -155,7 +156,7 @@ def main() -> None:
     my_app_key = os.environ.get("MY_APP_KEY")
 
     betfair = BetfairAPIController(certs_path, my_username, my_password, my_app_key)
-    app = Application(path, betfair)
+    app = Application(path, betfair, my_username, my_password)
     while True:
         time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
                        # do so maybe it doesn't matter.
