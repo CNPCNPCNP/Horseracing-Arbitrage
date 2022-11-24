@@ -159,9 +159,11 @@ def main() -> None:
 
     betfair = BetfairAPIController(certs_path, my_username, my_password, my_app_key)
     app = Application(path, betfair, my_username, my_password, races)
-    while True:
+    stop_time = time.time() + 60 * RUN_TIME_MINUTES
+
+    while time.time() > stop_time:
         time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
-                       # do so maybe it doesn't matter.
+                        # do so maybe it doesn't matter.
         print("Refreshing races attempt")
         app.refresh_races()
 
