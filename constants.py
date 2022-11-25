@@ -10,7 +10,7 @@ TROT_ICON = 'M14.9389'
 GREYHOUND_ICON = 'M2.73859'
 WIN_MARKET_REGEX = re.compile(r'^R\d+$')
 PRICE_PROJECTION = filters.price_projection(price_data = filters.price_data(ex_best_offers=True))
-RUN_TIME_MINUTES = 1
+RUN_TIME_MINUTES = 10
 
 #First value is BETR venue name, second value is betfair venue name
 VENUES = {# Greyhound races
@@ -41,7 +41,7 @@ VENUES = {# Greyhound races
           "Richmond": "Richmond",
           "Traralgon": "Traralgon",
           "Addington": "Addington",
-          
+
 
           # Trots
           "Pinjarra": "Pinjarra",
