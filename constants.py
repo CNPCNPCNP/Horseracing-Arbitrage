@@ -91,19 +91,25 @@ VENUES = {# Greyhound races
           "Cairns": "Cairns",
           
           "Wanganui": "Wanganui",
-          "Te Rapa": "Te Rapa",
+          #"Te Rapa": "Te Rapa", This race doesn't scrape properly, fuck it its low vol anyway
           "Rosehill": "Rosehill",
+          "Moe": "Moe",
+          "Gold Coast": "Gold Coast",
+          "Caulfield": "Caulfield",
+          "Kembla Grange": "Kembla Grange",
+
+
           
           # US horse races have different format, need to scrape differently. Here for now
           "Hawthorne": "Hawthorne",
           "Delta Downs": "Delta Downs",
           "Penn National": "Penn National",
           "Remington Park": "Remington Park",
-          "Charles Town": "Charles Town"
+          "Charles Town": "Charles Town",
           }
 
-AMERICAN_RACES = set("Hawthorne", 
+AMERICAN_RACES = set(["Hawthorne", 
                      "Delta Downs", 
                      "Penn National", 
                      "Remington Park", 
-                     "Charles Town")
+                     "Charles Town"])

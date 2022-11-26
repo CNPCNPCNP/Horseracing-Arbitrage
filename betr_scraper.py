@@ -25,8 +25,7 @@ class RaceBuilder():
     def __init__(self, path: str, url: str, races: int) -> None:
         options = Options()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        self.wd = webdriver.Chrome(service = Service(self.path), chrome_options = options)
-        
+        self.wd = webdriver.Chrome(service = Service(path), chrome_options = options)
         self.wd.maximize_window() # For maximizing window
         self.wd.implicitly_wait(3) # gives an implicit wait for 2 seconds
         self.wd.get(url)
@@ -52,7 +51,7 @@ class RaceBuilder():
         # Had issues with trying to iterate over list normally with for loop, so reload the race list every time and 
         # access each race by index. Inefficient but it works fine. Only scraping 5 races at this stage, may scrape more
         # if this approach is successful.
-        while len(races) < self.races and index < 20:
+        while len(races) < self.races and index < 19:
             races_links = self.get_all_upcoming_races()
             self.wd.execute_script(CLICK, races_links[index])
             
@@ -78,6 +77,9 @@ class RaceBuilder():
         except NoSuchElementException:
             print("Unable to determine race number")
             race_number = 0 # Use sentinel value of 0 for races where we can't determine number, will skip matching later
+        except ValueError:
+            print("Found wrong value for race number?")
+            race_number = 0
 
         # Get url so we can access the race later to bet
         url = self.wd.current_url
