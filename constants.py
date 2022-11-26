@@ -71,13 +71,13 @@ VENUES = {# Greyhound races
           "Finger Lakes": "Finger Lakes",
           "Ludlow": "Ludlow",
           "Sedgefield": "Sedgefield",
-          
+          "Morphettville": "Morphettville",
           "Turf Paradise": "Turf Paradise",
           "Zia Park": "Zia Park",
           "Laurel Park": "Laurel Park",
           "Philadelphia Park": "Philadelphia",
           "Sandown": "Sandown",
-          
+          "Ascot": "Ascot",
           "Mountaineer Park": "Mountaineer Park",
           "Avondale": "Avondale",
           "Doomben": "Doomben",
@@ -89,7 +89,7 @@ VENUES = {# Greyhound races
           "Northam": "Northam",
           "Wyong": "Wyong",
           "Cairns": "Cairns",
-          
+          "Ipswich": "Ipswich",
           "Wanganui": "Wanganui",
           #"Te Rapa": "Te Rapa", This race doesn't scrape properly, fuck it its low vol anyway
           "Rosehill": "Rosehill",
@@ -97,6 +97,12 @@ VENUES = {# Greyhound races
           "Gold Coast": "Gold Coast",
           "Caulfield": "Caulfield",
           "Kembla Grange": "Kembla Grange",
+          "Coonamble": "Coonamble",
+          #"Kranji": "Kranji", Another race that doesn't scrape properly
+          "Wagga Riverside": "Wagga",
+          "Kempsey": "Kempsey",
+          "Kilcoy": "Kilcoy",
+          "Pioneer Park": "Alice Springs",
 
 
           

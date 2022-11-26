@@ -29,7 +29,7 @@ class BetfairRaceScraper():
         self.username.send_keys(username)
         self.password.send_keys(password)
         self.login.click()
-        time.sleep(5)
+        time.sleep(8)
 
     def set_implicit_wait(self, wait: int) -> None:
         self.wd.implicitly_wait(wait)
