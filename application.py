@@ -140,7 +140,9 @@ class Application():
         self.betfair_update(race, scraper, event)
 
     def betfair_update(self, race: Race, scraper: BetfairRaceScraper, event: threading.Event) -> None:
-        if race.get_type() == RaceType.HORSE_RACE:
+        if race.get_type() == RaceType.HORSE_RACE and race.get_venue() in AMERICAN_RACES:
+            lay_price_method = scraper.get_lay_prices_american
+        elif race.get_type() == RaceType.HORSE_RACE and race.get_venue() not in AMERICAN_RACES:
             lay_price_method = scraper.get_lay_prices_horses
         elif race.get_type() == RaceType.TROT_RACE:
             lay_price_method = scraper.get_lay_prices_trots
@@ -176,7 +178,7 @@ def main() -> None:
         app.refresh_races()
 
     app.log.to_csv('log.csv')
-    exit()
+    exit() # Won't fully exit until all threads are done apparently
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,4 @@
 import shin
-from datetime import datetime
 from enum import Enum
 
 class RaceType(Enum):
@@ -67,7 +66,6 @@ class Race():
 
     def compare_prices(self) -> dict:
         results = {}
-        results["TIME"] = datetime.now()
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)

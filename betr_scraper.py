@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
 """
@@ -22,12 +23,15 @@ class RaceBuilder():
     uses more threads
     """
     def __init__(self, path: str, url: str, races: int) -> None:
-        self.wd = webdriver.Chrome(service = Service(path))
-        self.url = url
+        options = Options()
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        self.wd = webdriver.Chrome(service = Service(self.path), chrome_options = options)
+        
         self.wd.maximize_window() # For maximizing window
         self.wd.implicitly_wait(3) # gives an implicit wait for 2 seconds
         self.wd.get(url)
 
+        self.url = url
         self.races = races
 
     """
