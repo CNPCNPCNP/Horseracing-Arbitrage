@@ -1,7 +1,5 @@
-"""
-Store each race as a custom class
-"""
 import shin
+from datetime import datetime
 from enum import Enum
 
 class RaceType(Enum):
@@ -69,11 +67,13 @@ class Race():
 
     def compare_prices(self) -> dict:
         results = {}
+        results["TIME"] = datetime.now()
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
             if betfair_price < betr_price:
                 print("ARB POSSIBLE")
+                print(f"{self._venue}, {horse}, {betr_price}, {betfair_price}")
             results[horse] = betr_price, betfair_price
         return results
 

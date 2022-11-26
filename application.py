@@ -1,6 +1,11 @@
-import time
 import os
+import string
+import time
 import threading
+
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning) # Fuck you pandas warnings
+import pandas as pd
 
 from constants import *
 from race import Race, RaceType
@@ -12,8 +17,8 @@ from betfair_scraper import BetfairRaceScraper
 from dotenv import load_dotenv
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
@@ -39,7 +44,8 @@ class Application():
 
         self.races = set()
         self.refresh_races()
-    
+
+        self.log = pd.DataFrame()
     """
     Goes to every race on the upcoming races page. If the race is not in the current races set, adds the race to the set
     and starts a new thread (browser window) to monitor the race prices. Also grabs the betfair market id/url when the
@@ -87,9 +93,9 @@ class Application():
         for index, horse in enumerate(horses):
             horse_number, remainder = horse.text.split(" ", 1)
             horse_name, gate = remainder.rsplit(" ", 1)
+            horse_name = horse_name.translate(str.maketrans('', '', string.punctuation))
             gate = int(gate[1:-1])
             number = index * 6 + 4
-            #print(horse_name, number, gate)
 
             try:
                 price = wd.find_element(By.XPATH, f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]")
@@ -115,10 +121,11 @@ class Application():
         sub_thread = threading.Thread(target = self.start_betfair_thread, args = [race, event])
         sub_thread.start()
     
-        wd.implicitly_wait(1)
         while self.get_race_data(wd, race): # If method returns False, thread should close
             if race.check_betfair_prices():
-                print(race.compare_prices())
+                comparison = race.compare_prices()
+                #print(comparison)
+                self.log.append(comparison, ignore_index = True)
             time.sleep(1) # Poll race data every 1 second
         event.clear()
         self.races.remove(race) # Remove race from races when completed
@@ -166,6 +173,8 @@ def main() -> None:
                         # do so maybe it doesn't matter.
         print("Refreshing races attempt")
         app.refresh_races()
+
+    app.log.to_csv('log.csv')
 
 if __name__ == "__main__":
     main()

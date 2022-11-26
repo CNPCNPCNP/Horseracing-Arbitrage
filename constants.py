@@ -10,7 +10,7 @@ TROT_ICON = 'M14.9389'
 GREYHOUND_ICON = 'M2.73859'
 WIN_MARKET_REGEX = re.compile(r'^R\d+$')
 PRICE_PROJECTION = filters.price_projection(price_data = filters.price_data(ex_best_offers=True))
-RUN_TIME_MINUTES = 10
+RUN_TIME_MINUTES = 5
 
 #First value is BETR venue name, second value is betfair venue name
 VENUES = {# Greyhound races
@@ -71,13 +71,13 @@ VENUES = {# Greyhound races
           "Finger Lakes": "Finger Lakes",
           "Ludlow": "Ludlow",
           "Sedgefield": "Sedgefield",
-          "Remington Park": "Remington Park",
+          
           "Turf Paradise": "Turf Paradise",
           "Zia Park": "Zia Park",
           "Laurel Park": "Laurel Park",
           "Philadelphia Park": "Philadelphia",
           "Sandown": "Sandown",
-          "Penn National": "Penn National",
+          
           "Mountaineer Park": "Mountaineer Park",
           "Avondale": "Avondale",
           "Doomben": "Doomben",
@@ -89,5 +89,15 @@ VENUES = {# Greyhound races
           "Northam": "Northam",
           "Wyong": "Wyong",
           "Cairns": "Cairns",
-
+          
+          "Wanganui": "Wanganui",
+          "Te Rapa": "Te Rapa",
+          "Rosehill": "Rosehill",
+          
+          # US horse races have different format, need to scrape differently. Here for now
+          # "Hawthorne": "Hawthorne",
+          # "Delta Downs": "Delta Downs"
+          # "Penn National": "Penn National",
+          #"Remington Park": "Remington Park",
+          # "Charles Town": "Charles Town"
           }
