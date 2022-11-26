@@ -2,6 +2,7 @@ import os
 import string
 import time
 import threading
+from importlib import reload
 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning) # Fuck you pandas warnings
@@ -125,7 +126,7 @@ class Application():
             if race.check_betfair_prices():
                 comparison = race.compare_prices()
                 #print(comparison)
-                self.log.append(comparison, ignore_index = True)
+                self.log = self.log.append(comparison, ignore_index = True)
             time.sleep(1) # Poll race data every 1 second
         event.clear()
         self.races.remove(race) # Remove race from races when completed
@@ -182,5 +183,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-

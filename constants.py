@@ -10,7 +10,7 @@ TROT_ICON = 'M14.9389'
 GREYHOUND_ICON = 'M2.73859'
 WIN_MARKET_REGEX = re.compile(r'^R\d+$')
 PRICE_PROJECTION = filters.price_projection(price_data = filters.price_data(ex_best_offers=True))
-RUN_TIME_MINUTES = 100
+RUN_TIME_MINUTES = 2
 
 #First value is BETR venue name, second value is betfair venue name
 VENUES = {# Greyhound races
@@ -91,25 +91,19 @@ VENUES = {# Greyhound races
           "Cairns": "Cairns",
           
           "Wanganui": "Wanganui",
-          #"Te Rapa": "Te Rapa", This race doesn't scrape properly, fuck it its low vol anyway
+          "Te Rapa": "Te Rapa",
           "Rosehill": "Rosehill",
-          "Moe": "Moe",
-          "Gold Coast": "Gold Coast",
-          "Caulfield": "Caulfield",
-          "Kembla Grange": "Kembla Grange",
-
-
           
           # US horse races have different format, need to scrape differently. Here for now
           "Hawthorne": "Hawthorne",
           "Delta Downs": "Delta Downs",
           "Penn National": "Penn National",
           "Remington Park": "Remington Park",
-          "Charles Town": "Charles Town",
+          "Charles Town": "Charles Town"
           }
 
-AMERICAN_RACES = set(["Hawthorne", 
+AMERICAN_RACES = set("Hawthorne", 
                      "Delta Downs", 
                      "Penn National", 
                      "Remington Park", 
-                     "Charles Town"])
+                     "Charles Town")
