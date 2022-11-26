@@ -102,8 +102,9 @@ VENUES = {# Greyhound races
           "Charles Town": "Charles Town"
           }
 
-AMERICAN_RACES = set("Hawthorne", 
+# I was getting an error wrapping this by set()
+AMERICAN_RACES = {"Hawthorne", 
                      "Delta Downs", 
                      "Penn National", 
                      "Remington Park", 
-                     "Charles Town")
+                     "Charles Town"}
