@@ -73,7 +73,7 @@ class Race():
             if betfair_price < betr_price:
                 print("ARB POSSIBLE")
                 print(f"{self._venue}, {horse}, {betr_price}, {betfair_price}")
-            results[horse] = betr_price, betfair_price, time
+            results[horse] = [betr_price, betfair_price, time]
         return results
 
     def __repr__(self) -> str:
