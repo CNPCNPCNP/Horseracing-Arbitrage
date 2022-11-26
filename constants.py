@@ -91,7 +91,7 @@ VENUES = {# Greyhound races
           "Cairns": "Cairns",
           "Ipswich": "Ipswich",
           "Wanganui": "Wanganui",
-          "Te Rapa": "Te Rapa",
+          # "Te Rapa": "Te Rapa", Don't scrape this race
           "Rosehill": "Rosehill",
           "Moe": "Moe",
           "Gold Coast": "Gold Coast",
