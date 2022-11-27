@@ -103,7 +103,8 @@ VENUES = {# Greyhound races
           "Kempsey": "Kempsey",
           "Kilcoy": "Kilcoy",
           "Pioneer Park": "Alice Springs",
-
+          "Geraldton": "Geraldton",
+          
 
           
           # US horse races have different format, need to scrape differently. Here for now

@@ -2,10 +2,7 @@ import os
 import string
 import time
 import threading
-from importlib import reload
 
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning) # Fuck you pandas warnings
 import pandas as pd
 
 from constants import *
@@ -46,13 +43,13 @@ class Application():
         self.races = set()
         self.refresh_races()
 
-        self.log = pd.DataFrame()
     """
     Goes to every race on the upcoming races page. If the race is not in the current races set, adds the race to the set
     and starts a new thread (browser window) to monitor the race prices. Also grabs the betfair market id/url when the
     race is added to the races set. Set is used for slightly faster lookups than list (checking if a race is in the set)
     """
     def refresh_races(self) -> None:
+        print("Refreshing races attempt")
         self.betfair_controller.keep_alive()
         races_update = self.race_builder.goto_every_race()
         for race in races_update:
@@ -123,14 +120,11 @@ class Application():
         sub_thread.start()
     
         while self.get_race_data(wd, race): # If method returns False, thread should close
-            if race.check_betfair_prices():
-                comparison = race.compare_prices()
-                #print(comparison)
-                self.log = self.log.append(comparison, ignore_index = True)
             time.sleep(1) # Poll race data every 1 second
         event.clear()
         self.races.remove(race) # Remove race from races when completed
         print("Removed race", race.get_venue(), race.get_race_number())
+        self.refresh_races()
 
     """
     Betfair scraper thread logic. One of these threads should be created for each active BETR scraper thread, so a total
@@ -152,7 +146,11 @@ class Application():
         while event.is_set(): # If method returns False, thread should close
             scraper.refresh()
             race.set_betfair_prices(lay_price_method())
+
+            comparison = pd.DataFrame([race.compare_prices()])
+            scraper.log = pd.concat([scraper.log, comparison], ignore_index=True)
             time.sleep(1) # Poll race data every 1 second
+        scraper.log.to_csv(f'{race.get_venue()}_{race.get_race_number()}.csv')
 
 """
 Main entry point for application logic. 
@@ -175,8 +173,7 @@ def main() -> None:
         print(stop_time - time.time())
         time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
                        # do so maybe it doesn't matter.
-        print("Refreshing races attempt")
-        app.refresh_races()
+        #app.refresh_races()
 
     app.log.to_csv('log.csv')
     exit() # Won't fully exit until all threads are done apparently

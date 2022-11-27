@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 import shin
 from enum import Enum
@@ -71,11 +72,11 @@ class Race():
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
-            current = time.time()
+            current = datetime.fromtimestamp(time.time())
             if betfair_price < betr_price:
                 print("ARB POSSIBLE")
                 print(f"{self._venue}, {horse}, {betr_price}, {betfair_price}")
-            results[horse] = [betr_price, betfair_price, current]
+            results[horse] = [current, betr_price, betfair_price]
         return results
 
     def __repr__(self) -> str:
