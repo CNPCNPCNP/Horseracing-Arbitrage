@@ -25,7 +25,7 @@ class RaceBuilder():
     def __init__(self, path: str, url: str, races: int) -> None:
         options = Options()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        self.wd = webdriver.Chrome(service = Service(path), chrome_options = options)
+        self.wd = webdriver.Chrome(service = Service(path), options = options)
         self.wd.maximize_window() # For maximizing window
         self.wd.implicitly_wait(3) # gives an implicit wait for 2 seconds
         self.wd.get(url)

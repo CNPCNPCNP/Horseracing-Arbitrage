@@ -71,7 +71,7 @@ class Application():
     def start_betr_thread(self, race: Race) -> None:
         options = Options()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        wd = webdriver.Chrome(service = Service(self.path), chrome_options = options)
+        wd = webdriver.Chrome(service = Service(self.path), options = options)
         wd.maximize_window()
         wd.implicitly_wait(5)
         wd.get(race.get_url())

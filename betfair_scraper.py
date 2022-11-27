@@ -16,7 +16,7 @@ class BetfairRaceScraper():
     def __init__(self, path: str, url: str, username: str, password: str) -> None:
         options = Options()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        self.wd = webdriver.Chrome(service = Service(path), chrome_options = options)
+        self.wd = webdriver.Chrome(service = Service(path), options = options)
         self.url = url
         self.wd.maximize_window()
         self.wd.implicitly_wait(8)
@@ -45,8 +45,7 @@ class BetfairRaceScraper():
         
         for index in range(1, len(horses) + 1):
             # The XPATH for betfair is always so ugly, oh well
-            horse_name = self.wd.find_element(By.XPATH,
-            f'//*[@id="main-wrapper"]/div/div[2]/div/ui-view/div/div/div[1]/div[3]/div/div[1]/div/bf-main-market/bf-main-marketview/div/div[2]/bf-marketview-runners-list[2]/div/div/div/table/tbody/tr[{index}]/td[1]/div[2]/div[2]/bf-runner-info/div/div/div[3]/h3').text
+            horse_name = self.wd.find_elements(By.CLASS_NAME,'runner-name')[index - 1].text
 
             lay_price = self.wd.find_element(By.XPATH,
             f'//*[@id="main-wrapper"]/div/div[2]/div/ui-view/div/div/div[1]/div[3]/div/div[1]/div/bf-main-market/bf-main-marketview/div/div[2]/bf-marketview-runners-list[2]/div/div/div/table/tbody/tr[{index}]/td[5]/button/div/span[1]').text
