@@ -20,7 +20,7 @@ class BetfairRaceScraper():
         self.wd = webdriver.Chrome(service = Service(path), options = options)
         self.url = url
         self.wd.maximize_window()
-        self.wd.implicitly_wait(8)
+        self.wd.implicitly_wait(20)
         self.wd.get(url)
 
         self.username = self.wd.find_element(By.XPATH, '//*[@id="ssc-liu"]')
@@ -30,9 +30,9 @@ class BetfairRaceScraper():
         self.username.send_keys(username)
         self.password.send_keys(password)
         self.login.click()
-        
-        self.log = pd.DataFrame()
 
+        self.log = pd.DataFrame()
+        self.wd.implicitly_wait(8)
         time.sleep(8)
 
     def set_implicit_wait(self, wait: int) -> None:

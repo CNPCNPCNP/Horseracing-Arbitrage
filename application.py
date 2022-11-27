@@ -6,6 +6,7 @@ import threading
 import pandas as pd
 
 from constants import *
+from datetime import datetime
 from race import Race, RaceType
 
 from betr_scraper import RaceBuilder
@@ -41,6 +42,7 @@ class Application():
         self.betfair_controller.login()
 
         self.races = set()
+        self.refreshing = True
         self.refresh_races()
 
     """
@@ -49,6 +51,9 @@ class Application():
     race is added to the races set. Set is used for slightly faster lookups than list (checking if a race is in the set)
     """
     def refresh_races(self) -> None:
+        # Return early and don't refresh if refreshing boolean is False
+        if not self.refreshing:
+            return
         print("Refreshing races attempt")
         self.betfair_controller.keep_alive()
         races_update = self.race_builder.goto_every_race()
@@ -150,7 +155,9 @@ class Application():
             comparison = pd.DataFrame([race.compare_prices()])
             scraper.log = pd.concat([scraper.log, comparison], ignore_index=True)
             time.sleep(1) # Poll race data every 1 second
-        scraper.log.to_csv(f'{race.get_venue()}_{race.get_race_number()}.csv')
+        date = datetime.now()
+
+        scraper.log.to_csv(f'{date.strftime("%d/%m/%Y")}logs/{race.get_venue()}_{race.get_race_number()}.csv')
 
 """
 Main entry point for application logic. 
@@ -169,13 +176,15 @@ def main() -> None:
     app = Application(path, betfair, my_username, my_password, races)
     stop_time = time.time() + 60 * RUN_TIME_MINUTES
 
+    app.refreshing = True
+
     while time.time() < stop_time:
         print(stop_time - time.time())
         time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
                        # do so maybe it doesn't matter.
         #app.refresh_races()
-
-    app.log.to_csv('log.csv')
+    
+    app.refreshing = False
     exit() # Won't fully exit until all threads are done apparently
 
 if __name__ == "__main__":
