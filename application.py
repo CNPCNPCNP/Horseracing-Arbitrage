@@ -157,7 +157,7 @@ class Application():
             time.sleep(1) # Poll race data every 1 second
         date = datetime.now()
 
-        scraper.log.to_csv(f'{date.strftime("%d/%m/%Y")}logs/{race.get_venue()}_{race.get_race_number()}.csv')
+        scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y")}_{race.get_venue()}_{race.get_race_number()}.csv')
 
 """
 Main entry point for application logic. 
