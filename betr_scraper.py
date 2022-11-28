@@ -53,8 +53,11 @@ class RaceBuilder():
         # if this approach is successful.
         while len(races) < self.races and index < 19:
             races_links = self.get_all_upcoming_races()
-            self.wd.execute_script(CLICK, races_links[index])
-            
+            try:
+                self.wd.execute_script(CLICK, races_links[index])
+            except IndexError:
+                print(index, "IndexError detected")
+                break
             race = self.get_prices_from_race_page()
             if race.valid_race():
                 races.append(race)
