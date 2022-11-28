@@ -178,6 +178,8 @@ def main() -> None:
     my_password = os.environ.get("MY_PASSWORD")
     my_app_key = os.environ.get("MY_APP_KEY")
     races = int(os.environ.get("RACES"))
+    betr_username = os.environ.get("BETR_USERNAME")
+    betr_password = os.environ.get("BETR_PASSWORD")
 
     betfair = BetfairAPIController(certs_path, my_username, my_password, my_app_key)
     app = Application(path, betfair, my_username, my_password, races)
