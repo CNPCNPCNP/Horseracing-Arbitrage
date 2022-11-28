@@ -9,6 +9,7 @@ HORSE_ICON = 'M13.1346'
 TROT_ICON = 'M14.9389'
 GREYHOUND_ICON = 'M2.73859'
 WIN_MARKET_REGEX = re.compile(r'^R\d+$')
+WIN_MARKET_REGEX2 = re.compile(r'^A\d+$')
 PRICE_PROJECTION = filters.price_projection(price_data = filters.price_data(ex_best_offers=True))
 RUN_TIME_MINUTES = 500
 

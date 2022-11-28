@@ -65,6 +65,9 @@ class Application():
             if race not in self.races:
                 print("Races updated", race.get_venue(), race.get_race_number())
                 race.set_market_id(self.betfair_controller.get_market(race))
+                if race.get_market_id() == 0:
+                    print("Couldn't natch market ID")
+                    continue
                 print(race.get_betfair_url())
                 thread = threading.Thread(target = self.start_betr_thread, args = [race])
                 thread.start()
