@@ -41,6 +41,7 @@ class Application():
         self.betfair_controller = betfair
         self.betfair_controller.login()
 
+        self.number_of_races = races
         self.races = set()
         self.refreshing = True
         self.refresh_races()
@@ -53,6 +54,9 @@ class Application():
     def refresh_races(self) -> None:
         # Return early and don't refresh if refreshing boolean is False
         if not self.refreshing:
+            return
+        # Return early if we are already scraping the correct number of races
+        if len(self.races) >= self.number_of_races:
             return
         print("Refreshing races attempt")
         self.betfair_controller.keep_alive()

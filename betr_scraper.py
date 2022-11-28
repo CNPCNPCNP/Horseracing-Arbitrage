@@ -46,18 +46,15 @@ class RaceBuilder():
     """
     def goto_every_race(self) -> list[Race]:
         self.wd.implicitly_wait(1)
+        races_number = len(self.get_all_upcoming_races()) - 1
         races = []
         index = 0
         # Had issues with trying to iterate over list normally with for loop, so reload the race list every time and 
         # access each race by index. Inefficient but it works fine. Only scraping 5 races at this stage, may scrape more
         # if this approach is successful.
-        while len(races) < self.races and index < 19:
+        while len(races) < self.races and index < races_number:
             races_links = self.get_all_upcoming_races()
-            try:
-                self.wd.execute_script(CLICK, races_links[index])
-            except IndexError:
-                print(index, "IndexError detected")
-                break
+            self.wd.execute_script(CLICK, races_links[index])
             race = self.get_prices_from_race_page()
             if race.valid_race():
                 races.append(race)
