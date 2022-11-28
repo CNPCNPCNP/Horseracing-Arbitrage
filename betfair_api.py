@@ -67,12 +67,6 @@ class BetfairAPIController():
                 return market.market_id
         return 0
 
-    def get_market_id(self, race: Race):
-        venue = race.get_venue()
-        race_type = race.get_type()
-        if race_type == RaceType.GREYHOUND_RACE:
-            pass
-
 def matches(catalogue) -> bool:
     name = catalogue.market_name.split(" ")[0]
-    return re.match(WIN_MARKET_REGEX, name) or re.match(WIN_MARKET_REGEX2, name)
+    return re.match(WIN_MARKET_REGEX, name)

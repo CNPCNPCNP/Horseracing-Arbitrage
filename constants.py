@@ -9,7 +9,6 @@ HORSE_ICON = 'M13.1346'
 TROT_ICON = 'M14.9389'
 GREYHOUND_ICON = 'M2.73859'
 WIN_MARKET_REGEX = re.compile(r'^R\d+$')
-WIN_MARKET_REGEX2 = re.compile(r'^A\d+$')
 PRICE_PROJECTION = filters.price_projection(price_data = filters.price_data(ex_best_offers=True))
 RUN_TIME_MINUTES = 500
 
@@ -20,16 +19,16 @@ VENUES = {# Greyhound races
           "Warrnambool": "Warrnambool",
           "Maitland": "Maitland",
           "Angle Park": "Angle Park",
-          "Central Park Bags": "Central Park",
-          "Suffolk Downs Am": "Suffolk Downs",
-          "Perry Bar Bags": "Perry Barr",
-          "Swindon Bags": "Swindon",
-          "Sheffield Bags": "Sheffield",
+          # "Central Park Bags": "Central Park", Can't seem to match UK greyhound races properly
+          # "Suffolk Downs Am": "Suffolk Downs",
+          # "Perry Bar Bags": "Perry Barr",
+          # "Swindon Bags": "Swindon ",
+          # "Sheffield Bags": "Sheffield",
           "Doncaster": "Doncaster",
-          "Yarmouth Bags": "Yarmouth",
-          "Nottingham Bags": "Nottingham",
+          # "Yarmouth Bags": "Yarmouth",
+          # "Nottingham Bags": "Nottingham",
           "Romford": "Romford",
-          "Towcester Bags": "Towcester",
+          # "Towcester Bags": "Towcester",
           "Albion Park": "Albion Park", # Both greyhounds and trots at Albion Park? Maybe need more logic to handle edge cases
           "Warragul": "Warragul",
           "Grafton": "Grafton",
