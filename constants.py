@@ -41,7 +41,7 @@ VENUES = {# Greyhound races
           "Richmond": "Richmond",
           "Traralgon": "Traralgon",
           "Addington": "Addington",
-
+          "Cannington": "Cannington",
 
           # Trots
           "Pinjarra": "Pinjarra",
@@ -59,7 +59,7 @@ VENUES = {# Greyhound races
           "Melton": "Melton",
           "Alexandra Park": "Alexandra Park",
           "Melton": "Melton",
-
+          "Menangle": "Menangle",
 
           
           # Horse races
@@ -104,8 +104,9 @@ VENUES = {# Greyhound races
           "Kilcoy": "Kilcoy",
           "Pioneer Park": "Alice Springs",
           "Geraldton": "Geraldton",
-          
-
+          "Townsville": "Townswille",
+          "Ararat": "Ararat",
+          "Tamworth": "Tamworth",
           
           # US horse races have different format, need to scrape differently. Here for now
           "Hawthorne": "Hawthorne",
