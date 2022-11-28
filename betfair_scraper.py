@@ -9,9 +9,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
-
-
-
 class BetfairRaceScraper():
 
     def __init__(self, path: str, url: str, username: str, password: str) -> None:
