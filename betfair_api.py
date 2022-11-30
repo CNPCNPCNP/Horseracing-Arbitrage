@@ -33,8 +33,13 @@ class BetfairAPIController():
     Takes a venue as a string (eg. Flemington). Returns the event id of the first event at that venue, in most cases 
     there should only be one event at a venue anyway. (event is different to market)
     """
-    def get_event_id_for_venue(self, venue: str) -> int:
-        venue_filter = betfairlightweight.filters.market_filter(venues = [venue])
+    def get_event_id_for_venue(self, venue: str, type: RaceType) -> int:
+        if type == RaceType.GREYHOUND_RACE:
+            race_type = "greyhound"
+        else:
+            race_type = "horse"
+        venue_filter = betfairlightweight.filters.market_filter(venues = [venue],
+                                                                text_query = race_type)
         events = self.trading.betting.list_events(filter = venue_filter)
         event_id = events[0].event.id
         return event_id
@@ -42,8 +47,8 @@ class BetfairAPIController():
     """
     Takes a venue as a string and returns a list of markets at that venue
     """
-    def get_markets_at_venue(self, venue: str) -> list:
-        event_id = self.get_event_id_for_venue(venue)
+    def get_markets_at_venue(self, venue: str, type: RaceType) -> list:
+        event_id = self.get_event_id_for_venue(venue, type)
         market_catalogue_filter = betfairlightweight.filters.market_filter(event_ids = [event_id])
         market_catalogues = self.trading.betting.list_market_catalogue(filter = market_catalogue_filter, 
                                                                        max_results = 20)
@@ -60,7 +65,7 @@ class BetfairAPIController():
     def get_market(self, race: Race):
         venue = race.get_venue()
         race_number = race.get_race_number()
-        market_catalogues = self.get_markets_at_venue(venue)
+        market_catalogues = self.get_markets_at_venue(venue, race.get_type())
         for market in market_catalogues:
             market_race_number = int(market.market_name.split(" ")[0][1:])
             if market_race_number == race_number:

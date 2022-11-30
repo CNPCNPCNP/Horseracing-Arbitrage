@@ -17,6 +17,7 @@ from betfair_scraper import BetfairRaceScraper
 from dotenv import load_dotenv
 
 import undetected_chromedriver as uc
+from undetected_chromedriver import ChromeOptions
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.service import Service
@@ -81,15 +82,16 @@ class Application():
     Starts a thread for a given race and enters loop of refreshing data for that race (opens a new browser window)
     """
     def start_betr_thread(self, race: Race) -> None:
-        wd = uc.Chrome()
+        uc_options = uc.ChromeOptions()
+        uc_options.add_experimental_option("prefs", {"credentials_enable_service": False, "profile.password_manager_enabled": False})
+        wd = uc.Chrome(options = uc_options)
         wd.maximize_window()
-        wd.implicitly_wait(8)
+        wd.implicitly_wait(15)
         wd.get(race.get_url())
-        time.sleep(20)
 
         login = wd.find_element(By.XPATH, '//*[@id="bm-root"]/div[3]/header/div/div[2]/button[1]')
         wd.execute_script(CLICK, login)
-        time.sleep(random.random()/2)
+        time.sleep(1.5 + random.random())
 
         username_entry = wd.find_element(By.XPATH, '//*[@id="Username"]')
         password_entry = wd.find_element(By.XPATH, '//*[@id="Password"]')
@@ -98,17 +100,10 @@ class Application():
         username_entry.click()
 
         time.sleep(random.random()/5)
-        for letter in self.betr_username:
-            username_entry.send_keys(letter)
-            time.sleep(random.random()/8)
-        
-        password_entry.click()
+        username_entry.send_keys(self.betr_username)
         time.sleep(random.random()/5)
-
-        for letter in self.betr_password:
-            password_entry.send_keys(letter)
-            time.sleep(random.random()/8)
-        
+        password_entry.click()
+        password_entry.send_keys(self.betr_password)
         time.sleep(random.random()/5)
         login_button.click()
 
@@ -160,13 +155,58 @@ class Application():
         sub_thread.start()
     
         while self.get_race_data(wd, race) and event.is_set(): # If method returns False, thread should close
-            comparison = race.get_prices()
-            time.sleep(1) # Poll race data every 1 second
+            if race.check_betfair_prices() and not race.betted:
+                horse = race.get_arb_horses()
+                if horse:
+                    print(f"Attempting to bet on {horse} at {race.get_venue()}")
+                    race.betted = self.bet_horse(wd, horse, 1)
+            time.sleep(0.5) # Poll race data every 0.5 seconds
         event.clear()
         self.races.remove(race) # Remove race from races when completed
         print("Removed race", race.get_venue(), race.get_race_number())
         wd.close()
         self.refresh_races()
+    
+    def bet_horse(self, wd: uc.Chrome, horse: str, amount: int):
+        horses = wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
+        prices = wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
+
+        if len(prices) <= 4:
+            horses = horses[:len(prices)]
+        else:
+            horses = horses[:len(prices) // 2]
+
+        for index, horse in enumerate(horses):
+            _, remainder = horse.text.split(" ", 1)
+            # Split once from the right to get gate separate from horse name. This avoids edge case where there are 
+            # spaces in the horses name
+            horse_name, _ = remainder.rsplit(" ", 1)
+            horse_name = horse_name.translate(str.maketrans('', '', string.punctuation))
+            print(horse_name)
+
+            if horse_name == horse:
+                number = index * 6 + 4
+                button = wd.find_element(By.XPATH, f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]")
+                self.button = f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]"
+                wd.execute_script(CLICK, button)
+                break
+        
+        bet_entry = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div/input')
+        confirm_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[2]') 
+        bet_entry.click()
+        time.sleep(random.random()/10)
+        bet_entry.send_keys(str(amount))
+        time.sleep(random.random()/10)
+        confirm_button.click()
+        time.sleep(random.random()/10)
+        confirm_button.click()
+        try:
+            wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div[2]/div/span')
+            print(f"Bet placed successfully on {horse} for {amount}")
+            return True
+        except NoSuchElementException:
+            print("Price changed, bet failed")
+            return False
 
     """
     Betfair scraper thread logic. One of these threads should be created for each active BETR scraper thread, so a total
@@ -189,10 +229,11 @@ class Application():
             scraper.refresh()
             try:
                 race.set_betfair_prices(lay_price_method())
-            except NoSuchElementException:
-                print("No Such element, closing thread!")
+            except NoSuchElementException as ex:
+                print(f"No Such element, closing thread for race {race.get_race_number()} {race.get_venue()}!")
                 event.clear()
-                # Close betr and betfair threads if for some reason the betfair scraping fails
+                raise ex
+                #Close betr and betfair threads if for some reason the betfair scraping fails
             
             if race.check_betfair_prices():
                 comparison = pd.DataFrame([race.compare_prices()])

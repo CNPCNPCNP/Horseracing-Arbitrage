@@ -29,7 +29,7 @@ class BetfairRaceScraper():
         self.login.click()
 
         self.log = pd.DataFrame()
-        self.wd.implicitly_wait(8)
+        self.wd.implicitly_wait(15)
         time.sleep(8)
 
     def set_implicit_wait(self, wait: int) -> None:
@@ -108,7 +108,7 @@ class BetfairRaceScraper():
             # The XPATH for betfair is always so ugly, oh well
             dog_name = self.wd.find_element(By.XPATH,
             f'//*[@id="main-wrapper"]/div/div[2]/div/ui-view/div/div/div[1]/div[3]/div/div[1]/div/bf-main-market/bf-main-marketview/div/div[2]/bf-marketview-runners-list[2]/div/div/div/table/tbody/tr[{index}]/td[1]/div/div[2]/bf-runner-info/div/div/div[2]/h3').text
-              
+             
             lay_price = self.wd.find_element(By.XPATH,
             f'//*[@id="main-wrapper"]/div/div[2]/div/ui-view/div/div/div[1]/div[3]/div/div[1]/div/bf-main-market/bf-main-marketview/div/div[2]/bf-marketview-runners-list[2]/div/div/div/table/tbody/tr[{index}]/td[5]/button/div/span[1]').text
 

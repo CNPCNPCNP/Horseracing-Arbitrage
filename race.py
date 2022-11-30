@@ -82,6 +82,14 @@ class Race():
             results[horse] = [current, betr_price, betfair_price]
         return results
 
+    def get_arb_horses(self) -> list[tuple]:
+        for horse in self._prices:
+            betr_price = self._prices[horse]
+            betfair_price = self._betfair_prices.get(horse, 99999)
+            if betfair_price <= betr_price and betr_price <= 10:
+                return horse
+        return None
+
     def __repr__(self) -> str:
         return f"<{self.get_venue()}, {self.get_race_number()}, {self.get_type()}>"
 
