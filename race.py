@@ -21,7 +21,10 @@ class Race():
         # Betfair stuff
         self._market_id = 0
         self._betfair_url = ""
-        self._betfair_prices = None
+        self._betfair_prices = {}
+
+        # Other variables
+        self.betted = False
     
     def get_venue(self) -> str:
         return self._venue
@@ -45,7 +48,7 @@ class Race():
         return self._betfair_url
 
     def check_betfair_prices(self) -> bool:
-        return self._betfair_prices is not None
+        return self._betfair_prices
 
     def set_market_id(self, market_id: int) -> None:
         self._market_id = market_id

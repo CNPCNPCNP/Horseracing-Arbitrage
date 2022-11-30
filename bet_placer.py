@@ -46,7 +46,6 @@ class BetPlacementController():
         
         time.sleep(random.random()/5)
         login_button.click()
-        time.sleep(random.random()/5)
 
         horses = self.wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
         prices = self.wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")

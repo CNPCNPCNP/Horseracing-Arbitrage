@@ -1,4 +1,5 @@
 import os
+import random
 import string
 import time
 import threading
@@ -15,10 +16,9 @@ from betfair_scraper import BetfairRaceScraper
 
 from dotenv import load_dotenv
 
-from selenium import webdriver
+import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
 """
@@ -32,10 +32,13 @@ class Application():
     Builds our application using a given BetfairController and creates a RaceBuilder using the given path and the
     constant URL. Set the races parameter to scan more races at a time. 
     """
-    def __init__(self, path: str, betfair: BetfairAPIController, username: str, password: str, races: int) -> None:
+    def __init__(self, path: str, betfair: BetfairAPIController, username: str, password: str, betr_username: str, betr_password: str, races: int) -> None:
         self.path = path
         self.username = username
         self.password = password
+
+        self.betr_username = betr_username
+        self.betr_password = betr_password
 
         self.race_builder = RaceBuilder(self.path, URL, races)
         self.betfair_controller = betfair
@@ -66,7 +69,7 @@ class Application():
                 print("Races updated", race.get_venue(), race.get_race_number())
                 race.set_market_id(self.betfair_controller.get_market(race))
                 if race.get_market_id() == 0:
-                    print("Couldn't natch market ID")
+                    print("Couldn't match market ID")
                     continue
                 print(race.get_betfair_url())
                 thread = threading.Thread(target = self.start_betr_thread, args = [race])
@@ -78,19 +81,44 @@ class Application():
     Starts a thread for a given race and enters loop of refreshing data for that race (opens a new browser window)
     """
     def start_betr_thread(self, race: Race) -> None:
-        options = Options()
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        wd = webdriver.Chrome(service = Service(self.path), options = options)
+        wd = uc.Chrome()
         wd.maximize_window()
-        wd.implicitly_wait(5)
+        wd.implicitly_wait(8)
         wd.get(race.get_url())
+        time.sleep(20)
+
+        login = wd.find_element(By.XPATH, '//*[@id="bm-root"]/div[3]/header/div/div[2]/button[1]')
+        wd.execute_script(CLICK, login)
+        time.sleep(random.random()/2)
+
+        username_entry = wd.find_element(By.XPATH, '//*[@id="Username"]')
+        password_entry = wd.find_element(By.XPATH, '//*[@id="Password"]')
+        login_button = wd.find_element(By.XPATH, '//*[@id="floating-ui-root"]/div/div/div/div[2]/div[2]/form/div[3]/div/button')
+        
+        username_entry.click()
+
+        time.sleep(random.random()/5)
+        for letter in self.betr_username:
+            username_entry.send_keys(letter)
+            time.sleep(random.random()/8)
+        
+        password_entry.click()
+        time.sleep(random.random()/5)
+
+        for letter in self.betr_password:
+            password_entry.send_keys(letter)
+            time.sleep(random.random()/8)
+        
+        time.sleep(random.random()/5)
+        login_button.click()
+
         self.betr_update(wd, race)
 
     """
     Updates the race data for a race and saves the details to the race dict. In future, this method will probably be
     used to determine betting opportunities.
     """
-    def get_race_data(self, wd: webdriver.Chrome, race: Race) -> None:
+    def get_race_data(self, wd: uc.Chrome, race: Race) -> None:
         horses = wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
         prices = wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
 
@@ -121,7 +149,7 @@ class Application():
     Main loop for individual thread (browser window). Should poll and get new race data for each race every second. If 
     data is not found for a race, thread should be killed and browser window will be closed. 
     """
-    def betr_update(self, wd: webdriver.Chrome, race: Race) -> None:
+    def betr_update(self, wd: uc.Chrome, race: Race) -> None:
         # Use threading.Event to stop betfair thread when the betr thread is stopped (no way to directly terminate 
         # threads in Python, instead need to use shared state)
         event = threading.Event()
@@ -131,11 +159,13 @@ class Application():
         sub_thread = threading.Thread(target = self.start_betfair_thread, args = [race, event])
         sub_thread.start()
     
-        while self.get_race_data(wd, race): # If method returns False, thread should close
+        while self.get_race_data(wd, race) and event.is_set(): # If method returns False, thread should close
+            comparison = race.get_prices()
             time.sleep(1) # Poll race data every 1 second
         event.clear()
         self.races.remove(race) # Remove race from races when completed
         print("Removed race", race.get_venue(), race.get_race_number())
+        wd.close()
         self.refresh_races()
 
     """
@@ -157,11 +187,18 @@ class Application():
             lay_price_method = scraper.get_lay_prices_dogs
         while event.is_set(): # If method returns False, thread should close
             scraper.refresh()
-            race.set_betfair_prices(lay_price_method())
-
-            comparison = pd.DataFrame([race.compare_prices()])
+            try:
+                race.set_betfair_prices(lay_price_method())
+            except NoSuchElementException:
+                print("No Such element, closing thread!")
+                event.clear()
+                # Close betr and betfair threads if for some reason the betfair scraping fails
+            
+            if race.check_betfair_prices():
+                comparison = pd.DataFrame([race.compare_prices()])
             scraper.log = pd.concat([scraper.log, comparison], ignore_index=True)
             time.sleep(1) # Poll race data every 1 second
+        event.clear()
         date = datetime.now()
 
         scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}.csv')
@@ -182,7 +219,7 @@ def main() -> None:
     betr_password = os.environ.get("BETR_PASSWORD")
 
     betfair = BetfairAPIController(certs_path, my_username, my_password, my_app_key)
-    app = Application(path, betfair, my_username, my_password, races)
+    app = Application(path, betfair, my_username, my_password, betr_username, betr_password, races)
     stop_time = time.time() + 60 * RUN_TIME_MINUTES
 
     app.refreshing = True
