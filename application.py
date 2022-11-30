@@ -87,12 +87,15 @@ class Application():
         wd = uc.Chrome(options = uc_options)
         wd.maximize_window()
         wd.implicitly_wait(15)
-        wd.get(race.get_url())
+        self.login(wd, race.get_url())
 
+        self.betr_update(wd, race)
+
+    def login(self, wd: uc.Chrome, url: str) -> None:
+        wd.get(url)
         login = wd.find_element(By.XPATH, '//*[@id="bm-root"]/div[3]/header/div/div[2]/button[1]')
         wd.execute_script(CLICK, login)
         time.sleep(1.5 + random.random())
-
         username_entry = wd.find_element(By.XPATH, '//*[@id="Username"]')
         password_entry = wd.find_element(By.XPATH, '//*[@id="Password"]')
         login_button = wd.find_element(By.XPATH, '//*[@id="floating-ui-root"]/div/div/div/div[2]/div[2]/form/div[3]/div/button')
@@ -106,8 +109,12 @@ class Application():
         password_entry.send_keys(self.betr_password)
         time.sleep(random.random()/5)
         login_button.click()
-
-        self.betr_update(wd, race)
+        time.sleep(5)
+        try:
+            failure = wd.find_element(By.XPATH, '//*[@id="Username"]')
+            self.login(wd, url)
+        except NoSuchElementException:
+            print(f"Successfully logged in at {url}")
 
     """
     Updates the race data for a race and saves the details to the race dict. In future, this method will probably be
@@ -186,9 +193,8 @@ class Application():
 
             if horse_name == horse:
                 number = index * 6 + 4
-                button = wd.find_element(By.XPATH, f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]")
-                self.button = f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]"
-                wd.execute_script(CLICK, button)
+                button = wd.find_element(By.XPATH, f'//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[{number}]/button')
+                button.click()
                 break
         
         bet_entry = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div/input')
