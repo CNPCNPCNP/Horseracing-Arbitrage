@@ -132,7 +132,12 @@ class Application():
 
         race_summary = {}
         for index, horse in enumerate(horses):
-            horse_number, remainder = horse.text.split(" ", 1)
+            try:
+                horse_number, remainder = horse.text.split(" ", 1)
+            except ValueError as ex:
+                print(f"Value error at {index} in {race.get_venue()} {race.get_race_number()}")
+                print(horse.text)
+                raise ex
             horse_name, gate = remainder.rsplit(" ", 1)
             horse_name = horse_name.translate(str.maketrans('', '', string.punctuation))
             gate = int(gate[1:-1])
@@ -167,7 +172,11 @@ class Application():
                 horse = race.get_arb_horses()
                 if horse:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
-                    race.betted = self.bet_horse(wd, horse, 1)
+                    try:
+                        race.betted = self.bet_horse(wd, horse, 1)
+                    except NoSuchElementException:
+                        print(f"Bet failed @ {race.get_venue()}")
+                        event.clear()
             time.sleep(0.5) # Poll race data every 0.5 seconds
         event.clear()
         self.races.remove(race) # Remove race from races when completed
@@ -207,9 +216,10 @@ class Application():
         bet_entry.send_keys(str(amount))
         #time.sleep(random.random()/10)
         confirm_button.click()
-        #time.sleep(random.random()/10)
+        time.sleep(random.random()/10)
         confirm_button.click()
         wd.implicitly_wait(8)
+        time.sleep(10)
         try:
             wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div[2]/div/span')
             print(f"Bet placed successfully on {target_horse} for {amount}")
