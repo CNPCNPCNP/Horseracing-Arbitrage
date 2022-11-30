@@ -86,7 +86,7 @@ class Application():
         uc_options.add_experimental_option("prefs", {"credentials_enable_service": False, "profile.password_manager_enabled": False})
         wd = uc.Chrome(options = uc_options)
         wd.maximize_window()
-        wd.implicitly_wait(15)
+        wd.implicitly_wait(8)
         self.login(wd, race.get_url())
 
         self.betr_update(wd, race)
@@ -178,6 +178,7 @@ class Application():
     def bet_horse(self, wd: uc.Chrome, target_horse: str, amount: int):
         horses = wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
         prices = wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
+        wd.implicitly_wait(0.5)
 
         if len(prices) <= 4:
             horses = horses[:len(prices)]
@@ -194,25 +195,32 @@ class Application():
 
             if horse_name == target_horse:
                 number = index * 6 + 4
-                button = wd.find_element(By.XPATH, f'//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[{number}]/button')
+                button = wd.find_element(By.XPATH, f'//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]')
                 button.click()
                 break
         
+        #time.sleep(random.random()/10)
         bet_entry = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div/input')
         confirm_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[2]') 
         bet_entry.click()
-        time.sleep(random.random()/10)
+        #time.sleep(random.random()/10)
         bet_entry.send_keys(str(amount))
-        time.sleep(random.random()/10)
+        #time.sleep(random.random()/10)
         confirm_button.click()
-        time.sleep(random.random()/10)
+        #time.sleep(random.random()/10)
         confirm_button.click()
+        wd.implicitly_wait(8)
         try:
             wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div[2]/div/span')
-            print(f"Bet placed successfully on {horse} for {amount}")
+            print(f"Bet placed successfully on {target_horse} for {amount}")
             return True
         except NoSuchElementException:
             print("Price changed, bet failed")
+            edit_bet = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
+            edit_bet.click()
+            
+            x_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[1]/div[3]/div[1]/div/button/svg')
+            x_button.click()
             return False
 
     """
