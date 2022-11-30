@@ -112,6 +112,7 @@ class Application():
         time.sleep(5)
         try:
             failure = wd.find_element(By.XPATH, '//*[@id="Username"]')
+            print(f"Failed login, trying again at {url}")
             self.login(wd, url)
         except NoSuchElementException:
             print(f"Successfully logged in at {url}")
@@ -174,7 +175,7 @@ class Application():
         wd.close()
         self.refresh_races()
     
-    def bet_horse(self, wd: uc.Chrome, horse: str, amount: int):
+    def bet_horse(self, wd: uc.Chrome, target_horse: str, amount: int):
         horses = wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
         prices = wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
 
@@ -191,7 +192,7 @@ class Application():
             horse_name = horse_name.translate(str.maketrans('', '', string.punctuation))
             print(horse_name)
 
-            if horse_name == horse:
+            if horse_name == target_horse:
                 number = index * 6 + 4
                 button = wd.find_element(By.XPATH, f'//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[{number}]/button')
                 button.click()
