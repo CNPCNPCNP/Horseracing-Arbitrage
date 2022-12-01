@@ -86,7 +86,7 @@ class Race():
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
-            if betfair_price <= betr_price and betr_price <= 10:
+            if betfair_price < betr_price and betr_price <= 10:
                 return horse
         return None
 

@@ -17,10 +17,9 @@ from betfair_scraper import BetfairRaceScraper
 from dotenv import load_dotenv
 
 import undetected_chromedriver as uc
-from undetected_chromedriver import ChromeOptions
+
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.chrome.service import Service
 
 """
 Main class for our application. Primary application logic should take place in ths class. May split threading logic into 
@@ -121,7 +120,7 @@ class Application():
     Updates the race data for a race and saves the details to the race dict. In future, this method will probably be
     used to determine betting opportunities.
     """
-    def get_race_data(self, wd: uc.Chrome, race: Race) -> None:
+    def get_race_data(self, wd: uc.Chrome, race: Race) -> bool:
         horses = wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
         prices = wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
 
@@ -131,18 +130,20 @@ class Application():
             horses = horses[:len(prices) // 2]
 
         race_summary = {}
-        for index, horse in enumerate(horses):
+        for index in range(len(horses)):
+            number = 6 * index + 1
+
             try:
-                horse_number, remainder = horse.text.split(" ", 1)
-            except ValueError as ex:
-                print(f"Value error at {index} in {race.get_venue()} {race.get_race_number()}")
-                print(horse.text)
-                raise ex
+                horse = wd.find_element(By.XPATH, f'//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[{number}]/div/div[2]/span')
+            except NoSuchElementException:
+                print(f"Couldn't find {index} at {race.get_venue()} {race.get_race_number()}")
+                return False
+            horse_number, remainder = horse.text.split(" ", 1)
             horse_name, gate = remainder.rsplit(" ", 1)
             horse_name = horse_name.translate(str.maketrans('', '', string.punctuation))
             gate = int(gate[1:-1])
-            number = index * 6 + 4
 
+            number = index * 6 + 4
             try:
                 price = wd.find_element(By.XPATH, f"//*[@id='bm-content']/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]")
             except NoSuchElementException:
@@ -205,7 +206,7 @@ class Application():
             if horse_name == target_horse:
                 number = index * 6 + 4
                 button = wd.find_element(By.XPATH, f'//*[@id="bm-content"]/div[2]/div/div[2]/div[2]/div[{number}]/button/div/span[2]')
-                button.click()
+                wd.execute_script(CLICK, button)
                 break
         
         #time.sleep(random.random()/10)
@@ -218,11 +219,18 @@ class Application():
         confirm_button.click()
         time.sleep(random.random()/10)
         confirm_button.click()
+        
         wd.implicitly_wait(8)
         time.sleep(10)
         try:
             wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div[2]/div/span')
             print(f"Bet placed successfully on {target_horse} for {amount}")
+            edit_bet = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
+            edit_bet.click()
+            
+            x_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[1]/div[3]/div[1]/div/button/svg')
+            x_button.click()
+            wd.refresh()
             return True
         except NoSuchElementException:
             print("Price changed, bet failed")
@@ -231,6 +239,7 @@ class Application():
             
             x_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[1]/div[3]/div[1]/div/button/svg')
             x_button.click()
+            wd.refresh()
             return False
 
     """
@@ -251,7 +260,11 @@ class Application():
         else:
             lay_price_method = scraper.get_lay_prices_dogs
         while event.is_set(): # If method returns False, thread should close
-            scraper.refresh()
+            try:
+                scraper.refresh()
+            except NoSuchElementException:
+                break
+
             try:
                 race.set_betfair_prices(lay_price_method())
             except NoSuchElementException as ex:
@@ -268,6 +281,7 @@ class Application():
         date = datetime.now()
 
         scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}.csv')
+        scraper.close()
 
 """
 Main entry point for application logic. 
