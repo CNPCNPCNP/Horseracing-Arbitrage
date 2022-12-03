@@ -139,7 +139,12 @@ class Application():
             except NoSuchElementException:
                 print(f"Couldn't find {index} at {race.get_venue()} {race.get_race_number()}")
                 return False
-            horse_number, remainder = horse.text.split(" ", 1)
+            
+            try:
+                horse_number, remainder = horse.text.split(" ", 1)
+            except ValueError as ex:
+                print(f"Failed to get {horse.text} at {race.get_venue()} {race.get_race_number()}")
+                return False
             horse_name, gate = remainder.rsplit(" ", 1)
             horse_name = horse_name.translate(str.maketrans('', '', string.punctuation))
             gate = int(gate[1:-1])
@@ -202,7 +207,6 @@ class Application():
             # spaces in the horses name
             horse_name, _ = remainder.rsplit(" ", 1)
             horse_name = horse_name.translate(str.maketrans('', '', string.punctuation))
-            print(horse_name)
 
             if horse_name == target_horse:
                 number = index * 6 + 4
