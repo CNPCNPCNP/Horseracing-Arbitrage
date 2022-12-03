@@ -120,11 +120,8 @@ class BetfairRaceScraper():
         return prices
 
     def refresh(self) -> None:
-        try:
-            refresh_button = self.wd.find_element(By.CLASS_NAME, 'refresh-btn')
-            self.wd.execute_script(CLICK, refresh_button)
-        except Exception as ex:
-            print(self.url)
+        refresh_button = self.wd.find_element(By.CLASS_NAME, 'refresh-btn')
+        self.wd.execute_script(CLICK, refresh_button)
 
     def close(self) -> None:
         self.wd.close()

@@ -60,7 +60,9 @@ VENUES = {# Greyhound races
           "Alexandra Park": "Alexandra Park",
           "Melton": "Melton",
           "Menangle": "Menangle",
-
+          "Charlton": "Charlton",
+          "Young": "Young",
+          "Gloucester Park": "Gloucester Park",
           
           # Horse races
           "Geelong": "Geelong", # may need to be careful with this one, seen greyhounds at geelong
@@ -104,9 +106,23 @@ VENUES = {# Greyhound races
           "Kilcoy": "Kilcoy",
           "Pioneer Park": "Alice Springs",
           "Geraldton": "Geraldton",
-          "Townsville": "Townswille",
+          "Townsville": "Townsville",
           "Ararat": "Ararat",
           "Tamworth": "Tamworth",
+          "Mornington": "Mornington",
+          "Mudgee": "Mudgee",
+          "Randwich Kensington": "Randwick",
+          "Moonee Valley": "Moonee Valley",
+          "Mt Gambier": "Mount Gambier",
+          "Sunshine Coast": "Sunshine Coast",
+          "Pakenham": "Pakenham",
+          "Stawell": "Stawell",
+          "Albury": "Albury",
+          "Rockhampton": "Rockhampton",
+          "Toowoomba": "Toowoomba",
+          "Darwin": "Darwin",
+          "Esperance": "Esperance",
+
           
           # US horse races have different format, need to scrape differently. Here for now
           "Hawthorne": "Hawthorne",

@@ -46,6 +46,7 @@ class Application():
 
         self.number_of_races = races
         self.races = set()
+        self.betted = set()
         self.refreshing = True
         self.refresh_races()
 
@@ -169,12 +170,12 @@ class Application():
         sub_thread.start()
     
         while self.get_race_data(wd, race) and event.is_set(): # If method returns False, thread should close
-            if race.check_betfair_prices() and not race.betted:
+            if race.check_betfair_prices() and race not in self.betted:
                 horse = race.get_arb_horses()
                 if horse:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
                     try:
-                        race.betted = self.bet_horse(wd, horse, 1)
+                        race.betted = self.bet_horse(wd, horse, 1, race)
                     except NoSuchElementException:
                         print(f"Bet failed @ {race.get_venue()}")
                         event.clear()
@@ -185,7 +186,7 @@ class Application():
         wd.close()
         self.refresh_races()
     
-    def bet_horse(self, wd: uc.Chrome, target_horse: str, amount: int):
+    def bet_horse(self, wd: uc.Chrome, target_horse: str, amount: int, race: Race):
         horses = wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
         prices = wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
         wd.implicitly_wait(0.5)
@@ -225,11 +226,7 @@ class Application():
         try:
             wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div[2]/div/span')
             print(f"Bet placed successfully on {target_horse} for {amount}")
-            edit_bet = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
-            edit_bet.click()
-            
-            x_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[1]/div[3]/div[1]/div/button/svg')
-            x_button.click()
+            self.betted.add(race)
             wd.refresh()
             return True
         except NoSuchElementException:
@@ -263,6 +260,8 @@ class Application():
             try:
                 scraper.refresh()
             except NoSuchElementException:
+                print(f"Exiting {scraper.url}")
+                event.clear()
                 break
 
             try:
