@@ -227,7 +227,7 @@ class Application():
             wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div[2]/div/span')
             print(f"Bet placed successfully on {target_horse} for {amount}")
             self.betted.add(race)
-            wd.refresh()
+            wd.get(race.get_url())
             return True
         except NoSuchElementException:
             print("Price changed, bet failed")
