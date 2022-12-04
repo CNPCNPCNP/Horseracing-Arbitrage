@@ -33,7 +33,7 @@ class BetfairAPIController():
     Takes a venue as a string (eg. Flemington). Returns the event id of the first event at that venue, in most cases 
     there should only be one event at a venue anyway. (event is different to market)
     """
-    def get_event_id_for_venue(self, venue: str, type: RaceType) -> int:
+    def get_events_for_venue(self, venue: str, type: RaceType):
         if type == RaceType.GREYHOUND_RACE:
             race_type = "greyhound"
         else:
@@ -41,28 +41,24 @@ class BetfairAPIController():
         venue_filter = betfairlightweight.filters.market_filter(venues = [venue],
                                                                 text_query = race_type)
         events = self.trading.betting.list_events(filter = venue_filter)
-
-        if events:
-            event_id = events[0].event.id
-        else:
-            event_id = 0
-            
-        return event_id
+        return events
 
     """
     Takes a venue as a string and returns a list of markets at that venue
     """
     def get_markets_at_venue(self, venue: str, type: RaceType) -> list:
-        event_id = self.get_event_id_for_venue(venue, type)
-        market_catalogue_filter = betfairlightweight.filters.market_filter(event_ids = [event_id])
-        market_catalogues = self.trading.betting.list_market_catalogue(filter = market_catalogue_filter, 
-                                                                       max_results = 20)
-
-        # Filter out markets that aren't main race markets using regex (string pattern matching) on market_name\
-        # Not the most effective, sometimes names don't match necessarily
-        market_catalogues = list(filter(matches, market_catalogues))
-        return market_catalogues
-
+        events = self.get_events_for_venue(venue, type)
+        for event in events:
+            event_id = event.event.id
+            market_catalogue_filter = betfairlightweight.filters.market_filter(event_ids = [event_id])
+            market_catalogues = self.trading.betting.list_market_catalogue(market_projection=['MARKET_START_TIME'],
+                                                                           filter = market_catalogue_filter, 
+                                                                           max_results = 20)
+            date = market_catalogues[0].market_start_time.date()
+            if date == date.today():
+                market_catalogues = list(filter(matches, market_catalogues))
+                return market_catalogues
+        
     """
     Takes a race object and returns a marketID from betfair. If no matching race found, returns 0. May change logic for 
     this to throw exception if race not found.
