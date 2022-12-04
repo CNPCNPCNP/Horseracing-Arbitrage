@@ -63,6 +63,7 @@ VENUES = {# Greyhound races
           "Charlton": "Charlton",
           "Young": "Young",
           "Gloucester Park": "Gloucester Park",
+          "Echuca": "Echuca",
           
           # Horse races
           "Geelong": "Geelong", # may need to be careful with this one, seen greyhounds at geelong

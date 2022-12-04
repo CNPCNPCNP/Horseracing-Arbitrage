@@ -43,6 +43,7 @@ class BetfairRaceScraper():
         # Need to find how many non-scratched horses there are
         horses = self.wd.find_elements(By.CLASS_NAME, "back-selection-button")
         prices = {}
+        volume = int(self.wd.find_element(By.CLASS_NAME, "total-matched").text.split(" ")[1].replace(",", ""))
         
         for index in range(1, len(horses) + 1):
             # The XPATH for betfair is always so ugly, oh well
@@ -56,12 +57,13 @@ class BetfairRaceScraper():
             else:
                 prices[horse_name] = 99999
 
-        return prices
+        return prices, volume
 
     def get_lay_prices_american(self) -> dict:
         # Need to find how many non-scratched horses there are
         horses = self.wd.find_elements(By.CLASS_NAME, "back-selection-button")
         prices = {}
+        volume = int(self.wd.find_element(By.CLASS_NAME, "total-matched").text.split(" ")[1].replace(",", ""))
         
         for index in range(1, len(horses) + 1):
             # The XPATH for betfair is always so ugly, oh well
@@ -76,11 +78,12 @@ class BetfairRaceScraper():
             else:
                 prices[horse_name] = 99999
 
-        return prices
+        return prices, volume
 
     def get_lay_prices_trots(self) -> dict:
         horses = self.wd.find_elements(By.CLASS_NAME, "back-selection-button")
         prices = {}
+        volume = int(self.wd.find_element(By.CLASS_NAME, "total-matched").text.split(" ")[1].replace(",", ""))
         
         for index in range(1, len(horses) + 1):
             
@@ -98,11 +101,12 @@ class BetfairRaceScraper():
             else:
                 prices[horse_name] = 99999
 
-        return prices
+        return prices, volume
 
     def get_lay_prices_dogs(self) -> dict:
         dogs = self.wd.find_elements(By.CLASS_NAME, "back-selection-button")
         prices = {}
+        volume = int(self.wd.find_element(By.CLASS_NAME, "total-matched").text.split(" ")[1].replace(",", ""))
         
         for index in range(1, len(dogs) + 1):
             # The XPATH for betfair is always so ugly, oh well
@@ -117,7 +121,7 @@ class BetfairRaceScraper():
             else:
                 prices[dog_name] = 99998
 
-        return prices
+        return prices, volume
 
     def refresh(self) -> None:
         refresh_button = self.wd.find_element(By.CLASS_NAME, 'refresh-btn')

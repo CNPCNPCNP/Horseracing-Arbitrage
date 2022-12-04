@@ -22,6 +22,7 @@ class Race():
         self._market_id = 0
         self._betfair_url = ""
         self._betfair_prices = {}
+        self._volume = 0
 
         # Other variables
         self.betted = False
@@ -47,6 +48,9 @@ class Race():
     def get_betfair_url(self) -> str:
         return self._betfair_url
 
+    def get_volume(self) -> int:
+        return self._volume
+
     def check_betfair_prices(self) -> bool:
         return self._betfair_prices
 
@@ -62,6 +66,9 @@ class Race():
 
     def set_betfair_prices(self, prices: dict) -> None:
         self._betfair_prices = prices
+
+    def set_volume(self, volume: int) -> None:
+        self._volume = volume
 
     def valid_race(self) -> bool:
         return self._venue and self._race_number and self._prices and self._url and self._type != RaceType.UNKNOWN_RACE
@@ -82,13 +89,13 @@ class Race():
             results[horse] = [current, betr_price, betfair_price]
         return results
 
-    def get_arb_horses(self) -> list[tuple]:
+    def get_arb_horses(self) -> tuple[str, int, int]:
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
             if betfair_price < betr_price and betr_price <= 10:
-                return horse
-        return None
+                return horse, betr_price, self._volume
+        return None, None, None
 
     def __repr__(self) -> str:
         return f"<{self.get_venue()}, {self.get_race_number()}, {self.get_type()}>"

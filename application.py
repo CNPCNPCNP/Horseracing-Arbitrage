@@ -179,11 +179,12 @@ class Application():
     
         while self.get_race_data(wd, race) and event.is_set(): # If method returns False, thread should close
             if race.check_betfair_prices() and race not in self.betted:
-                horse = race.get_arb_horses()
+                horse, price, volume = race.get_arb_horses()
                 if horse:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
                     try:
                         race.betted = self.bet_horse(wd, horse, 1, race)
+                        bet = Bet(horse, race.get_venue(), race.get_race_number(), )
                     except NoSuchElementException:
                         print(f"Bet failed @ {race.get_venue()}")
                         event.clear()
@@ -273,7 +274,9 @@ class Application():
                 break
 
             try:
-                race.set_betfair_prices(lay_price_method())
+                prices, volume = lay_price_method()
+                race.set_betfair_prices(prices)
+                race.set_volume(volume)
             except NoSuchElementException as ex:
                 print(f"No Such element, closing thread for race {race.get_race_number()} {race.get_venue()}!")
                 event.clear()
@@ -289,6 +292,15 @@ class Application():
 
         scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}.csv')
         scraper.close()
+
+class Bet():
+    def __init__(self, horse: str, venue: str, race_number: int, price: int, time: datetime, volume: int):
+        self._horse = horse
+        self._venue = venue
+        self._race_number = race_number
+        self._price = price
+        self._time = time
+        self._volume = volume
 
 """
 Main entry point for application logic. 
