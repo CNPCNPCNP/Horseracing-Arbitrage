@@ -183,8 +183,9 @@ class Application():
                 if horse:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
                     try:
+                        timestamp = datetime.now()
                         betted = self.bet_horse(wd, horse, 1, race)
-                        bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, datetime.now())
+                        bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp)
                     except NoSuchElementException:
                         print(f"Bet failed @ {race.get_venue()}")
                         event.clear()
