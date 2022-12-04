@@ -145,6 +145,9 @@ class Application():
             except ValueError as ex:
                 print(f"Failed to get {horse.text} at {race.get_venue()} {race.get_race_number()}")
                 return False
+            except Exception as ex:
+                print(f'{race.get_venue()}, {race.get_race_number()} other exception thrown')
+                return False
             horse_name, gate = remainder.rsplit(" ", 1)
             horse_name = horse_name.translate(str.maketrans('', '', string.punctuation))
             gate = int(gate[1:-1])
@@ -217,13 +220,13 @@ class Application():
         #time.sleep(random.random()/10)
         bet_entry = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div/input')
         confirm_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[2]') 
-        bet_entry.click()
+        wd.execute_script(CLICK, bet_entry)
         #time.sleep(random.random()/10)
         bet_entry.send_keys(str(amount))
         #time.sleep(random.random()/10)
-        confirm_button.click()
+        wd.execute_script(CLICK, confirm_button)
         time.sleep(random.random()/10)
-        confirm_button.click()
+        wd.execute_script(CLICK, confirm_button)
         
         wd.implicitly_wait(8)
         time.sleep(10)
@@ -232,6 +235,7 @@ class Application():
             print(f"Bet placed successfully on {target_horse} for {amount}")
             self.betted.add(race)
             wd.get(race.get_url())
+            wd.refresh()
             return True
         except NoSuchElementException:
             print("Price changed, bet failed")
@@ -309,6 +313,7 @@ def main() -> None:
 
     while time.time() < stop_time:
         print(stop_time - time.time())
+        print(app.races)
         time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
                        # do so maybe it doesn't matter.
         #app.refresh_races()

@@ -41,7 +41,12 @@ class BetfairAPIController():
         venue_filter = betfairlightweight.filters.market_filter(venues = [venue],
                                                                 text_query = race_type)
         events = self.trading.betting.list_events(filter = venue_filter)
-        event_id = events[0].event.id
+
+        if events:
+            event_id = events[0].event.id
+        else:
+            event_id = 0
+            
         return event_id
 
     """

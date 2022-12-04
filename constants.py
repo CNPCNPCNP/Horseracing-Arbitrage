@@ -122,8 +122,11 @@ VENUES = {# Greyhound races
           "Toowoomba": "Toowoomba",
           "Darwin": "Darwin",
           "Esperance": "Esperance",
+          "Werribee": "Werribee",
+          "Bairnsdale": "Bairnsdale",
+          "Hawkesbury": "Hawkesbury",
+          "Murray Bridge": "Murray Bridge",
 
-          
           # US horse races have different format, need to scrape differently. Here for now
           "Hawthorne": "Hawthorne",
           "Delta Downs": "Delta Downs",
