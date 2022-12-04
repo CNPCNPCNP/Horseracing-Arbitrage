@@ -23,9 +23,6 @@ class Race():
         self._betfair_url = ""
         self._betfair_prices = {}
         self._volume = 0
-
-        # Other variables
-        self.betted = False
     
     def get_venue(self) -> str:
         return self._venue

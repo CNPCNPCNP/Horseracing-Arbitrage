@@ -183,11 +183,19 @@ class Application():
                 if horse:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
                     try:
-                        race.betted = self.bet_horse(wd, horse, 1, race)
-                        bet = Bet(horse, race.get_venue(), race.get_race_number(), )
+                        betted = self.bet_horse(wd, horse, 1, race)
+                        bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, datetime.now())
                     except NoSuchElementException:
                         print(f"Bet failed @ {race.get_venue()}")
                         event.clear()
+
+                    if betted:
+                        bet.log_bet()
+                        clear_slip = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
+                        wd.execute_script(CLICK, clear_slip)
+                        wd.refresh()
+                        wd.get(race.get_url())
+                        
             time.sleep(0.5) # Poll race data every 0.5 seconds
         event.clear()
         self.races.remove(race) # Remove race from races when completed
@@ -294,13 +302,23 @@ class Application():
         scraper.close()
 
 class Bet():
-    def __init__(self, horse: str, venue: str, race_number: int, price: int, time: datetime, volume: int):
-        self._horse = horse
-        self._venue = venue
-        self._race_number = race_number
-        self._price = price
-        self._time = time
-        self._volume = volume
+    def __init__(self, horse: str, type: RaceType, venue: str, race_number: int, price: int, volume: int, time: datetime):
+        self.horse = horse
+        self.type = type
+        self.venue = venue
+        self.race_number = race_number
+        self.price = price
+        self.volume = volume
+        self.time = time
+
+    def log_bet(self) -> None:
+            bet = pd.DataFrame({'Horse': self.horse,
+                            'Type': self.type,
+                            'Venue': f'{self.venue} {self.race_number}',
+                            'Price': self.price,
+                            'Volume': self.volume
+                            }, index=[self.time.strftime('%d-%m-%Y_%H:%M:%S')])
+            bet.to_csv(f'logs/{self.horse}_{self.venue}_{self.race_number}.csv')
 
 """
 Main entry point for application logic. 
