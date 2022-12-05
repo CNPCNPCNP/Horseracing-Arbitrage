@@ -133,7 +133,8 @@ VENUES = {# Greyhound races
           "Delta Downs": "Delta Downs",
           "Penn National": "Penn National",
           "Remington Park": "Remington Park",
-          "Charles Town": "Charles Town"
+          "Charles Town": "Charles Town",
+          "Golden Gate": "Golden Gate Fields"
           }
 
 # I was getting an error wrapping this by set()
@@ -141,4 +142,5 @@ AMERICAN_RACES = {"Hawthorne",
                      "Delta Downs", 
                      "Penn National", 
                      "Remington Park", 
-                     "Charles Town"}
+                     "Charles Town",
+                     "Golden Gate Fields"}

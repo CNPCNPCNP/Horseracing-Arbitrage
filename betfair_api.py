@@ -55,9 +55,10 @@ class BetfairAPIController():
                                                                            filter = market_catalogue_filter, 
                                                                            max_results = 20)
             date = market_catalogues[0].market_start_time.date()
-            if date == date.today():
+            if date == date.today() or date == date.today() - datetime.timedelta(days = 1):
                 market_catalogues = list(filter(matches, market_catalogues))
                 return market_catalogues
+        return []
         
     """
     Takes a race object and returns a marketID from betfair. If no matching race found, returns 0. May change logic for 
