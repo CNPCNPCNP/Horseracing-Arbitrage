@@ -46,7 +46,8 @@ class Application():
 
         self.number_of_races = races
         self.races = set()
-        self.betted = set()
+        self.betted = {}
+        self.betted_horses = set()
         self.refreshing = True
         self.refresh_races()
 
@@ -76,6 +77,7 @@ class Application():
                 thread = threading.Thread(target = self.start_betr_thread, args = [race])
                 thread.start()
                 self.races.add(race)
+                self.betted[race] = 0
         print("Successfully refreshed")
 
     """
@@ -178,9 +180,9 @@ class Application():
         sub_thread.start()
     
         while self.get_race_data(wd, race) and event.is_set(): # If method returns False, thread should close
-            if race.check_betfair_prices() and race not in self.betted:
+            if race.check_betfair_prices() and self.betted[race] <= 0.5:
                 horse, price, volume = race.get_arb_horses()
-                if horse:
+                if horse and horse not in self.betted_horses:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
                     try:
                         timestamp = datetime.now()
@@ -192,8 +194,13 @@ class Application():
 
                     if betted:
                         bet.log_bet()
-                        clear_slip = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
-                        wd.execute_script(CLICK, clear_slip)
+                        self.betted[race] += 1/price
+                        self.betted_horses.add(horse)
+                        try:
+                            clear_slip = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
+                            wd.execute_script(CLICK, clear_slip)
+                        except NoSuchElementException:
+                            print(f"Couldn't find refresh button at {race.get_venue()} {race.get_race_number()}")
                         wd.refresh()
                         wd.get(race.get_url())
                         
@@ -243,17 +250,16 @@ class Application():
         try:
             wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div[2]/div/span')
             print(f"Bet placed successfully on {target_horse} for {amount}")
-            self.betted.add(race)
             wd.get(race.get_url())
             wd.refresh()
             return True
         except NoSuchElementException:
             print("Price changed, bet failed")
             edit_bet = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
-            edit_bet.click()
+            wd.execute_script(CLICK, edit_bet)
             
             x_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[1]/div[3]/div[1]/div/button/svg')
-            x_button.click()
+            wd.execute_script(CLICK, x_button)
             wd.refresh()
             return False
 

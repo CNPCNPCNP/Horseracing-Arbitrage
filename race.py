@@ -80,9 +80,6 @@ class Race():
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
             current = datetime.fromtimestamp(time.time())
-            if betfair_price < betr_price:
-                print("ARB POSSIBLE")
-                print(f"{self._venue}, {horse}, {betr_price}, {betfair_price}")
             results[horse] = [current, betr_price, betfair_price]
         return results
 

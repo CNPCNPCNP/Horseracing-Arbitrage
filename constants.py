@@ -42,6 +42,7 @@ VENUES = {# Greyhound races
           "Traralgon": "Traralgon",
           "Addington": "Addington",
           "Cannington": "Cannington",
+          "Shepparton": "Shepparton",
 
           # Trots
           "Pinjarra": "Pinjarra",
@@ -127,6 +128,8 @@ VENUES = {# Greyhound races
           "Bairnsdale": "Bairnsdale",
           "Hawkesbury": "Hawkesbury",
           "Murray Bridge": "Murray Bridge",
+          "Gatton": "Gatton",
+
 
           # US horse races have different format, need to scrape differently. Here for now
           "Hawthorne": "Hawthorne",
