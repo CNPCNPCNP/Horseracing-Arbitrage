@@ -19,17 +19,9 @@ VENUES = {# Greyhound races
           "Warrnambool": "Warrnambool",
           "Maitland": "Maitland",
           "Angle Park": "Angle Park",
-          # "Central Park Bags": "Central Park", Can't seem to match UK greyhound races properly
-          # "Suffolk Downs Am": "Suffolk Downs",
-          # "Perry Bar Bags": "Perry Barr",
-          # "Swindon Bags": "Swindon ",
-          # "Sheffield Bags": "Sheffield",
           "Doncaster": "Doncaster",
-          # "Yarmouth Bags": "Yarmouth",
-          # "Nottingham Bags": "Nottingham",
           "Romford": "Romford",
-          # "Towcester Bags": "Towcester",
-          "Albion Park": "Albion Park", # Both greyhounds and trots at Albion Park? Maybe need more logic to handle edge cases
+          "Albion Park": "Albion Park",
           "Warragul": "Warragul",
           "Grafton": "Grafton",
           "Gosford": "Gosford",
@@ -43,6 +35,8 @@ VENUES = {# Greyhound races
           "Addington": "Addington",
           "Cannington": "Cannington",
           "Shepparton": "Shepparton",
+          "Horsham": "Horsham",
+          "Casino": "Casino",
 
           # Trots
           "Pinjarra": "Pinjarra",
@@ -67,7 +61,7 @@ VENUES = {# Greyhound races
           "Echuca": "Echuca",
           
           # Horse races
-          "Geelong": "Geelong", # may need to be careful with this one, seen greyhounds at geelong
+          "Geelong": "Geelong",
           "Murwillumbah": "Murwillumbah",
           "Newcastle": "Newcastle",
           "Le Croise Laroc": "Le Croise-Laroche",
@@ -76,8 +70,6 @@ VENUES = {# Greyhound races
           "Ludlow": "Ludlow",
           "Sedgefield": "Sedgefield",
           "Morphettville": "Morphettville",
-          "Turf Paradise": "Turf Paradise",
-          "Zia Park": "Zia Park",
           "Laurel Park": "Laurel Park",
           "Philadelphia Park": "Philadelphia",
           "Sandown": "Sandown",
@@ -95,14 +87,12 @@ VENUES = {# Greyhound races
           "Cairns": "Cairns",
           "Ipswich": "Ipswich",
           "Wanganui": "Wanganui",
-          # "Te Rapa": "Te Rapa", Don't scrape this race
           "Rosehill": "Rosehill",
           "Moe": "Moe",
           "Gold Coast": "Gold Coast",
           "Caulfield": "Caulfield",
           "Kembla Grange": "Kembla Grange",
           "Coonamble": "Coonamble",
-          #"Kranji": "Kranji", Another race that doesn't scrape properly
           "Wagga Riverside": "Wagga",
           "Kempsey": "Kempsey",
           "Kilcoy": "Kilcoy",
@@ -129,6 +119,8 @@ VENUES = {# Greyhound races
           "Hawkesbury": "Hawkesbury",
           "Murray Bridge": "Murray Bridge",
           "Gatton": "Gatton",
+          "Mackay": "Mackay",
+          "Port Pirie": "Port Pirie",
 
 
           # US horse races have different format, need to scrape differently. Here for now
@@ -137,13 +129,19 @@ VENUES = {# Greyhound races
           "Penn National": "Penn National",
           "Remington Park": "Remington Park",
           "Charles Town": "Charles Town",
-          "Golden Gate": "Golden Gate Fields"
+          "Zia Park": "Zia Park",
+          "Turf Paradise": "Turf Paradise",
+          "Golden Gate": "Golden Gate Fields",
+          "Philadelphia Park": "Philadelphia"
           }
 
 # I was getting an error wrapping this by set()
 AMERICAN_RACES = {"Hawthorne", 
-                     "Delta Downs", 
-                     "Penn National", 
-                     "Remington Park", 
-                     "Charles Town",
-                     "Golden Gate Fields"}
+                  "Delta Downs", 
+                  "Penn National", 
+                  "Remington Park", 
+                  "Charles Town",
+                  "Golden Gate Fields",
+                  "Turf Paradise",
+                  "Zia Park",
+                  "Philadelphia"}

@@ -49,6 +49,7 @@ class Application():
         self.betted = {}
         self.betted_horses = set()
         self.refreshing = True
+        self.fails = 0
         self.refresh_races()
 
     """
@@ -184,25 +185,27 @@ class Application():
                 horse, price, volume = race.get_arb_horses()
                 if horse and horse not in self.betted_horses:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
-                    try:
-                        timestamp = datetime.now()
-                        betted = self.bet_horse(wd, horse, 1, race)
-                        bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp)
-                    except NoSuchElementException:
-                        print(f"Bet failed @ {race.get_venue()}")
-                        event.clear()
+                    # try:
+                    #     timestamp = datetime.now()
+                    #     betted = self.bet_horse(wd, horse, 1, race)
+                    #     bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp)
+                    # except NoSuchElementException:
+                    #     print(f"Bet failed @ {race.get_venue()}")
+                    #     event.clear()
 
-                    if betted:
-                        bet.log_bet()
-                        self.betted[race] += 1/price
-                        self.betted_horses.add(horse)
-                        try:
-                            clear_slip = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
-                            wd.execute_script(CLICK, clear_slip)
-                        except NoSuchElementException:
-                            print(f"Couldn't find refresh button at {race.get_venue()} {race.get_race_number()}")
-                        wd.refresh()
-                        wd.get(race.get_url())
+                    # if betted:
+                    #     bet.log_bet()
+                    #     self.betted[race] += 1/price
+                    #     self.betted_horses.add(horse)
+                    #     try:
+                    #         clear_slip = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
+                    #         wd.execute_script(CLICK, clear_slip)
+                    #     except NoSuchElementException:
+                    #         print(f"Couldn't find refresh button at {race.get_venue()} {race.get_race_number()}")
+                    #     wd.refresh()
+                    #     wd.get(race.get_url())
+                    # else:
+                    #     self.fails += 1
                         
             time.sleep(0.5) # Poll race data every 0.5 seconds
         event.clear()
@@ -234,13 +237,10 @@ class Application():
                 wd.execute_script(CLICK, button)
                 break
         
-        #time.sleep(random.random()/10)
         bet_entry = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div/input')
         confirm_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[2]') 
         wd.execute_script(CLICK, bet_entry)
-        #time.sleep(random.random()/10)
         bet_entry.send_keys(str(amount))
-        #time.sleep(random.random()/10)
         wd.execute_script(CLICK, confirm_button)
         time.sleep(random.random()/10)
         wd.execute_script(CLICK, confirm_button)
@@ -299,8 +299,9 @@ class Application():
                 #Close betr and betfair threads if for some reason the betfair scraping fails
             
             if race.check_betfair_prices():
-                comparison = pd.DataFrame([race.compare_prices()])
-            scraper.log = pd.concat([scraper.log, comparison], ignore_index=True)
+                current = datetime.now()
+                comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
+            scraper.log = pd.concat([scraper.log, comparison])
             time.sleep(1) # Poll race data every 1 second
         event.clear()
         date = datetime.now()
@@ -325,7 +326,7 @@ class Bet():
                             'Price': self.price,
                             'Volume': self.volume
                             }, index=[self.time.strftime('%d-%m-%Y_%H:%M:%S')])
-            bet.to_csv(f'logs/{self.horse}_{self.venue}_{self.race_number}.csv')
+            bet.to_csv(f'bets/{self.horse}_{self.venue}_{self.race_number}.csv')
 
 """
 Main entry point for application logic. 
@@ -350,7 +351,7 @@ def main() -> None:
 
     while time.time() < stop_time:
         print(stop_time - time.time())
-        print(app.races)
+        print(app.races, app.fails)
         time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
                        # do so maybe it doesn't matter.
         #app.refresh_races()

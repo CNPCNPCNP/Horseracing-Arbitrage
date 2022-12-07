@@ -1,6 +1,3 @@
-import time
-from datetime import datetime
-
 import shin
 from enum import Enum
 
@@ -79,8 +76,7 @@ class Race():
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
-            current = datetime.fromtimestamp(time.time())
-            results[horse] = [current, betr_price, betfair_price]
+            results[horse] = betr_price, betfair_price
         return results
 
     def get_arb_horses(self) -> tuple[str, int, int]:
