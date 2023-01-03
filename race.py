@@ -19,7 +19,11 @@ class Race():
         self._market_id = 0
         self._betfair_url = ""
         self._betfair_prices = {}
+        self._midpoint_prices = {}
         self._volume = 0
+
+        # Flucs
+        self._last_prices = prices
     
     def get_venue(self) -> str:
         return self._venue
@@ -56,10 +60,16 @@ class Race():
             self._betfair_url = f"https://www.betfair.com.au/exchange/plus/horse-racing/market/{market_id}"
 
     def set_betr_prices(self, prices: dict) -> None:
+        for horse in prices:
+            if self._prices[horse] != prices[horse]:
+                self._last_prices[horse] = self._prices[horse]
         self._prices = prices
 
     def set_betfair_prices(self, prices: dict) -> None:
         self._betfair_prices = prices
+
+    def set_midpoint_prices(self, prices: dict) -> None:
+        self._midpoint_prices = prices
 
     def set_volume(self, volume: int) -> None:
         self._volume = volume
@@ -76,16 +86,19 @@ class Race():
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
-            results[horse] = betr_price, betfair_price
+            midpoint_price = self._midpoint_prices.get(horse, 99990)
+            results[horse] = betr_price, betfair_price, midpoint_price
         return results
 
     def get_arb_horses(self) -> tuple[str, int, int]:
+        if self._volume < 150:
+            return None, None, None, None, None
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
             if betfair_price < betr_price and betr_price <= 10:
-                return horse, betr_price, self._volume
-        return None, None, None
+                return horse, betr_price, self._volume, self._last_prices[horse], self._midpoint_prices.get(horse, 99995)
+        return None, None, None, None, None
 
     def __repr__(self) -> str:
         return f"<{self.get_venue()}, {self.get_race_number()}, {self.get_type()}>"

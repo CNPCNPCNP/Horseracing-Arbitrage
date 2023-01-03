@@ -114,7 +114,7 @@ class Application():
         login_button.click()
         time.sleep(5)
         try:
-            failure = wd.find_element(By.XPATH, '//*[@id="Username"]')
+            _ = wd.find_element(By.XPATH, '//*[@id="Username"]')
             print(f"Failed login, trying again at {url}")
             self.login(wd, url)
         except NoSuchElementException:
@@ -144,7 +144,7 @@ class Application():
                 return False
             
             try:
-                horse_number, remainder = horse.text.split(" ", 1)
+                _, remainder = horse.text.split(" ", 1)
             except ValueError as ex:
                 print(f"Failed to get {horse.text} at {race.get_venue()} {race.get_race_number()}")
                 return False
@@ -182,30 +182,32 @@ class Application():
     
         while self.get_race_data(wd, race) and event.is_set(): # If method returns False, thread should close
             if race.check_betfair_prices() and self.betted[race] <= 0.5:
-                horse, price, volume = race.get_arb_horses()
+                horse, price, volume, last_price, midpoint_price = race.get_arb_horses()
                 if horse and horse not in self.betted_horses:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
-                    # try:
-                    #     timestamp = datetime.now()
-                    #     betted = self.bet_horse(wd, horse, 1, race)
-                    #     bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp)
-                    # except NoSuchElementException:
-                    #     print(f"Bet failed @ {race.get_venue()}")
-                    #     event.clear()
+                    try:
+                        timestamp = datetime.now()
+                        betted = self.bet_horse(wd, horse, 1, race)
+                        bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, last_price, midpoint_price)
+                    except NoSuchElementException as ex:
+                        print(ex)
+                        print(f"Bet failed @ {race.get_venue()}")
+                        betted = False
+                        event.clear()
 
-                    # if betted:
-                    #     bet.log_bet()
-                    #     self.betted[race] += 1/price
-                    #     self.betted_horses.add(horse)
-                    #     try:
-                    #         clear_slip = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
-                    #         wd.execute_script(CLICK, clear_slip)
-                    #     except NoSuchElementException:
-                    #         print(f"Couldn't find refresh button at {race.get_venue()} {race.get_race_number()}")
-                    #     wd.refresh()
-                    #     wd.get(race.get_url())
-                    # else:
-                    #     self.fails += 1
+                    if betted:
+                        bet.log_bet()
+                        self.betted[race] += 1/price
+                        self.betted_horses.add(horse)
+                        try:
+                            clear_slip = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
+                            wd.execute_script(CLICK, clear_slip)
+                        except NoSuchElementException:
+                            print(f"Couldn't find refresh button at {race.get_venue()} {race.get_race_number()}")
+                        wd.refresh()
+                        wd.get(race.get_url())
+                    else:
+                        self.fails += 1
                         
             time.sleep(0.5) # Poll race data every 0.5 seconds
         event.clear()
@@ -257,9 +259,7 @@ class Application():
             print("Price changed, bet failed")
             edit_bet = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
             wd.execute_script(CLICK, edit_bet)
-            
-            x_button = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div/div/div[1]/div[3]/div[1]/div/button/svg')
-            wd.execute_script(CLICK, x_button)
+            wd.get(race.get_url())
             wd.refresh()
             return False
 
@@ -273,13 +273,17 @@ class Application():
 
     def betfair_update(self, race: Race, scraper: BetfairRaceScraper, event: threading.Event) -> None:
         if race.get_type() == RaceType.HORSE_RACE and race.get_venue() in AMERICAN_RACES:
-            lay_price_method = scraper.get_lay_prices_american
+            price_method = scraper.get_lay_prices_american
+            midpoint_method = scraper.get_prices_american
         elif race.get_type() == RaceType.HORSE_RACE and race.get_venue() not in AMERICAN_RACES:
-            lay_price_method = scraper.get_lay_prices_horses
+            price_method = scraper.get_lay_prices_horses
+            midpoint_method = scraper.get_prices_horses
         elif race.get_type() == RaceType.TROT_RACE:
-            lay_price_method = scraper.get_lay_prices_trots
+            price_method = scraper.get_lay_prices_trots
+            midpoint_method = scraper.get_prices_trots
         else:
-            lay_price_method = scraper.get_lay_prices_dogs
+            price_method = scraper.get_lay_prices_dogs
+            midpoint_method = scraper.get_prices_dogs
         while event.is_set(): # If method returns False, thread should close
             try:
                 scraper.refresh()
@@ -289,9 +293,11 @@ class Application():
                 break
 
             try:
-                prices, volume = lay_price_method()
+                prices, volume = price_method()
                 race.set_betfair_prices(prices)
                 race.set_volume(volume)
+                prices, _ = midpoint_method()
+                race.set_midpoint_prices(prices)
             except NoSuchElementException as ex:
                 print(f"No Such element, closing thread for race {race.get_race_number()} {race.get_venue()}!")
                 event.clear()
@@ -302,15 +308,15 @@ class Application():
                 current = datetime.now()
                 comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
             scraper.log = pd.concat([scraper.log, comparison])
-            time.sleep(1) # Poll race data every 1 second
+            time.sleep(0.5) # Poll race data every 0.5s
         event.clear()
         date = datetime.now()
 
-        scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}.csv')
+        scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}.csv')
         scraper.close()
 
 class Bet():
-    def __init__(self, horse: str, type: RaceType, venue: str, race_number: int, price: int, volume: int, time: datetime):
+    def __init__(self, horse: str, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, last_price: float, midpoint_price: float):
         self.horse = horse
         self.type = type
         self.venue = venue
@@ -319,14 +325,25 @@ class Bet():
         self.volume = volume
         self.time = time
 
+        self.last_price = last_price
+        self.midpoint_price = midpoint_price
+        if venue in AMERICAN_RACES:
+            self.location = 'USA'
+        else:
+            self.location = 'AUS'
+
     def log_bet(self) -> None:
-            bet = pd.DataFrame({'Horse': self.horse,
+        date = datetime.now().strftime('%d-%m-%Y')
+        bet = pd.DataFrame({'Horse': self.horse,
                             'Type': self.type,
                             'Venue': f'{self.venue} {self.race_number}',
+                            'Location': f'{self.location}',
                             'Price': self.price,
-                            'Volume': self.volume
+                            'Volume': self.volume,
+                            'Last Price': self.last_price,
+                            'Midpoint Price': self.midpoint_price
                             }, index=[self.time.strftime('%d-%m-%Y_%H:%M:%S')])
-            bet.to_csv(f'bets/{self.horse}_{self.venue}_{self.race_number}.csv')
+        bet.to_csv(f'bets/{date}_{self.horse}_{self.venue}_{self.race_number}.csv')
 
 """
 Main entry point for application logic. 
