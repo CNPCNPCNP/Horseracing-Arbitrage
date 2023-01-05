@@ -38,6 +38,8 @@ VENUES = {# Greyhound races
           "Horsham": "Horsham",
           "Casino": "Casino",
           "Ballarat": "Ballarat",
+          "Dapto": "Dapto",
+          "Hobart": "Hobart",
 
 
           # Trots

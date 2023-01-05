@@ -188,7 +188,7 @@ class Application():
                     try:
                         timestamp = datetime.now()
                         betted = self.bet_horse(wd, horse, 1, race)
-                        bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, last_price, midpoint_price)
+                        bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, last_price, midpoint_price, race.get_event_id())
                     except NoSuchElementException as ex:
                         print(ex)
                         print(f"Bet failed @ {race.get_venue()}")
@@ -312,11 +312,11 @@ class Application():
         event.clear()
         date = datetime.now()
 
-        scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}.csv')
+        scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}_{race.get_event_id()}.csv')
         scraper.close()
 
 class Bet():
-    def __init__(self, horse: str, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, last_price: float, midpoint_price: float):
+    def __init__(self, horse: str, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, last_price: float, midpoint_price: float, event_id: int):
         self.horse = horse
         self.type = type
         self.venue = venue
@@ -324,6 +324,7 @@ class Bet():
         self.price = price
         self.volume = volume
         self.time = time
+        self.event_id = event_id
 
         self.last_price = last_price
         self.midpoint_price = midpoint_price
@@ -337,12 +338,13 @@ class Bet():
         bet = pd.DataFrame({'Horse': self.horse,
                             'Type': self.type,
                             'Venue': f'{self.venue} {self.race_number}',
-                            'Location': f'{self.location}',
+                            'Location': self.location,
+                            'Event ID': self.event_id,
                             'Price': self.price,
                             'Volume': self.volume,
                             'Last Price': self.last_price,
                             'Midpoint Price': self.midpoint_price
-                            }, index=[self.time.strftime('%d-%m-%Y_%H:%M:%S')])
+                            }, index=[self.time.strftime('%d-%m-%Y %H:%M:%S')])
         bet.to_csv(f'bets/{date}_{self.horse}_{self.venue}_{self.race_number}.csv')
 
 """
