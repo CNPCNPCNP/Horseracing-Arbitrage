@@ -57,22 +57,22 @@ class BetfairAPIController():
             date = market_catalogues[0].market_start_time.date()
             if date == date.today() or date == date.today() - datetime.timedelta(days = 1):
                 market_catalogues = list(filter(matches, market_catalogues))
-                return market_catalogues
-        return []
+                return market_catalogues, event_id
+        return [], 0
         
     """
     Takes a race object and returns a marketID from betfair. If no matching race found, returns 0. May change logic for 
     this to throw exception if race not found.
     """
-    def get_market(self, race: Race):
+    def get_market(self, race: Race) -> tuple:
         venue = race.get_venue()
         race_number = race.get_race_number()
-        market_catalogues = self.get_markets_at_venue(venue, race.get_type())
+        market_catalogues, event_id = self.get_markets_at_venue(venue, race.get_type())
         for market in market_catalogues:
             market_race_number = int(market.market_name.split(" ")[0][1:])
             if market_race_number == race_number:
-                return market.market_id
-        return 0
+                return market.market_id, event_id
+        return 0, 0
 
 def matches(catalogue) -> bool:
     name = catalogue.market_name.split(" ")[0]

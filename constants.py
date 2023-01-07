@@ -37,6 +37,10 @@ VENUES = {# Greyhound races
           "Shepparton": "Shepparton",
           "Horsham": "Horsham",
           "Casino": "Casino",
+          "Ballarat": "Ballarat",
+          "Dapto": "Dapto",
+          "Hobart": "Hobart",
+
 
           # Trots
           "Pinjarra": "Pinjarra",
@@ -144,4 +148,5 @@ AMERICAN_RACES = {"Hawthorne",
                   "Golden Gate Fields",
                   "Turf Paradise",
                   "Zia Park",
-                  "Philadelphia"}
+                  "Philadelphia",
+                  "Mountaineer Park"}

@@ -55,9 +55,12 @@ class RaceBuilder():
         while len(races) < self.races and index < races_number:
             races_links = self.get_all_upcoming_races()
             self.wd.execute_script(CLICK, races_links[index])
-            race = self.get_prices_from_race_page()
-            if race.valid_race():
-                races.append(race)
+            try:
+                race = self.get_prices_from_race_page()
+                if race.valid_race():
+                    races.append(race)
+            except:
+                print("Exception when getting race details. Skipping race")
             self.wd.back()
             index += 1
         return races
