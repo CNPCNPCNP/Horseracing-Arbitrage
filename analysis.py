@@ -39,12 +39,27 @@ betfair_data.drop('IPTRADEDVOL', inplace=True, axis=1)
 betfair_data.drop('SELECTION_ID', inplace=True, axis=1)
 betfair_data.drop('EVENT_NAME', inplace=True, axis=1)
 betfair_data.drop('MENU_HINT', inplace=True, axis=1)
-
-all_bets.drop('Volume', inplace=True, axis=1)
-all_bets.drop('Last Price', inplace=True, axis=1)
+betfair_data.reset_index(inplace=True)
+betfair_data.drop('EVENT_ID', inplace=True, axis=1)
 
 betfair_data = betfair_data.replace(regex=[r'\d+\.\s'], value='')
 
+all_bets.drop('Volume', inplace=True, axis=1)
+all_bets.drop('Last Price', inplace=True, axis=1)
+all_bets.drop('Event ID', inplace=True, axis=1)
+all_bets.drop('Race Number', inplace=True, axis=1)
+all_bets.reset_index(inplace=True)
+all_bets = all_bets.rename(columns={'index': 'Datetime'})
+
+
+
 print(all_bets)
 print(betfair_data)
+
+betfair_data.to_csv(f'analysis/results/betfair_data.csv')
+
+all_bets = pd.merge(all_bets, betfair_data, left_on=['Horse'], right_on=['SELECTION_NAME'])
+all_bets["Turnover"] = (all_bets["Price"] / all_bets["BSP"])
+
+all_bets.to_csv(f'analysis/results/all_bets2.csv')
 
