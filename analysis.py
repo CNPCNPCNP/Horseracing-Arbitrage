@@ -17,7 +17,6 @@ all_bets.rename(columns={"Venue_y": "Venue"}, inplace=True)
 all_bets["Location"] = np.where(all_bets["Venue"].isin(AMERICAN_RACES), 'USA', 'AUS')
 all_bets["Midpoint Percentage"] = (all_bets["Midpoint Price"] / all_bets["Price"])
 
-<<<<<<< HEAD
 all_bets.drop('Volume', inplace=True, axis=1)
 all_bets.drop('Last Price', inplace=True, axis=1)
 all_bets.drop('Event ID', inplace=True, axis=1)
@@ -27,9 +26,6 @@ all_bets.reset_index(inplace=True)
 all_bets = all_bets.rename(columns={'index': 'Datetime'})
 all_bets['Datetime'] = all_bets['Datetime'].apply(lambda x: x.split()[0])
 all_bets['Datetime'] = all_bets['Datetime'].apply(lambda x: x.split('_')[0])
-=======
-all_bets.to_csv(f'analysis/results/all_bets.csv')
->>>>>>> 0b3d40479be73a6a001edfaf0052e1440b0bb77f
 
 betfair_csvs = os.listdir('analysis')
 betfair_data = pd.DataFrame()
@@ -57,7 +53,6 @@ all_bets.drop('Last Price', inplace=True, axis=1)
 
 betfair_data = betfair_data.replace(regex=[r'\d+\.\s'], value='')
 
-<<<<<<< HEAD
 all_bets.to_csv(f'analysis/results/all_bets.csv')
 betfair_data.to_csv(f'analysis/results/betfair_data.csv')
 
@@ -66,10 +61,6 @@ all_bets["Turnover"] = (all_bets["Price"] / all_bets["BSP"] * 100)
 all_bets.drop('EVENT_DT', inplace=True, axis=1)
 
 all_bets.to_csv(f'analysis/results/all_bets2.csv')
-=======
-print(all_bets)
-print(betfair_data)
->>>>>>> da40639ce1286231983353426f544455d2c628a7
 
 print(all_bets['Turnover'].mean(), len(all_bets))
 
