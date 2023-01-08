@@ -57,6 +57,7 @@ all_bets.drop('Last Price', inplace=True, axis=1)
 
 betfair_data = betfair_data.replace(regex=[r'\d+\.\s'], value='')
 
+<<<<<<< HEAD
 all_bets.to_csv(f'analysis/results/all_bets.csv')
 betfair_data.to_csv(f'analysis/results/betfair_data.csv')
 
@@ -65,6 +66,10 @@ all_bets["Turnover"] = (all_bets["Price"] / all_bets["BSP"] * 100)
 all_bets.drop('EVENT_DT', inplace=True, axis=1)
 
 all_bets.to_csv(f'analysis/results/all_bets2.csv')
+=======
+print(all_bets)
+print(betfair_data)
+>>>>>>> da40639ce1286231983353426f544455d2c628a7
 
 print(all_bets['Turnover'].mean(), len(all_bets))
 
