@@ -17,7 +17,19 @@ all_bets.rename(columns={"Venue_y": "Venue"}, inplace=True)
 all_bets["Location"] = np.where(all_bets["Venue"].isin(AMERICAN_RACES), 'USA', 'AUS')
 all_bets["Midpoint Percentage"] = (all_bets["Midpoint Price"] / all_bets["Price"])
 
+<<<<<<< HEAD
+all_bets.drop('Volume', inplace=True, axis=1)
+all_bets.drop('Last Price', inplace=True, axis=1)
+all_bets.drop('Event ID', inplace=True, axis=1)
+all_bets.drop('Race Number', inplace=True, axis=1)
+
+all_bets.reset_index(inplace=True)
+all_bets = all_bets.rename(columns={'index': 'Datetime'})
+all_bets['Datetime'] = all_bets['Datetime'].apply(lambda x: x.split()[0])
+all_bets['Datetime'] = all_bets['Datetime'].apply(lambda x: x.split('_')[0])
+=======
 all_bets.to_csv(f'analysis/results/all_bets.csv')
+>>>>>>> 0b3d40479be73a6a001edfaf0052e1440b0bb77f
 
 betfair_csvs = os.listdir('analysis')
 betfair_data = pd.DataFrame()
@@ -48,3 +60,12 @@ betfair_data = betfair_data.replace(regex=[r'\d+\.\s'], value='')
 print(all_bets)
 print(betfair_data)
 
+print(all_bets['Turnover'].mean(), len(all_bets))
+
+threshold = 0.925
+adjusted = all_bets.loc[all_bets['Midpoint Percentage'] <= threshold, 'Turnover'].mean()
+count = len(all_bets.loc[all_bets['Midpoint Percentage'] <= threshold])
+print(adjusted, count)
+
+recent = all_bets.loc[all_bets['Datetime'] == '06-01-2023']
+print(recent)
