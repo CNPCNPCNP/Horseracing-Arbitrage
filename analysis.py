@@ -27,6 +27,8 @@ all_bets = all_bets.rename(columns={'index': 'Datetime'})
 all_bets['Datetime'] = all_bets['Datetime'].apply(lambda x: x.split()[0])
 all_bets['Datetime'] = all_bets['Datetime'].apply(lambda x: x.split('_')[0])
 
+all_bets.to_csv(f'analysis/results/all_bets.csv')
+
 betfair_csvs = os.listdir('analysis')
 betfair_data = pd.DataFrame()
 
@@ -48,10 +50,10 @@ betfair_data.drop('SELECTION_ID', inplace=True, axis=1)
 betfair_data.drop('EVENT_NAME', inplace=True, axis=1)
 betfair_data.drop('MENU_HINT', inplace=True, axis=1)
 
-all_bets.drop('Volume', inplace=True, axis=1)
-all_bets.drop('Last Price', inplace=True, axis=1)
-
+betfair_data.reset_index(inplace=True)
+betfair_data.drop('EVENT_ID', inplace=True, axis=1)
 betfair_data = betfair_data.replace(regex=[r'\d+\.\s'], value='')
+betfair_data['EVENT_DT'] = betfair_data['EVENT_DT'].apply(lambda x: x.split()[0])
 
 all_bets.to_csv(f'analysis/results/all_bets.csv')
 betfair_data.to_csv(f'analysis/results/betfair_data.csv')
@@ -69,5 +71,6 @@ adjusted = all_bets.loc[all_bets['Midpoint Percentage'] <= threshold, 'Turnover'
 count = len(all_bets.loc[all_bets['Midpoint Percentage'] <= threshold])
 print(adjusted, count)
 
-recent = all_bets.loc[all_bets['Datetime'] == '06-01-2023']
+recent = all_bets.loc[all_bets['Datetime'] == '07-01-2023']
 print(recent)
+print(recent['Turnover'].mean())
