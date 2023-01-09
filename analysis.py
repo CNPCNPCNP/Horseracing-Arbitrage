@@ -66,11 +66,14 @@ all_bets.to_csv(f'analysis/results/all_bets2.csv')
 
 print(all_bets['Turnover'].mean(), len(all_bets))
 
-threshold = 0.925
+threshold = 0.95
 adjusted = all_bets.loc[all_bets['Midpoint Percentage'] <= threshold, 'Turnover'].mean()
 count = len(all_bets.loc[all_bets['Midpoint Percentage'] <= threshold])
 print(adjusted, count)
 
-recent = all_bets.loc[all_bets['Datetime'] == '07-01-2023']
-print(recent)
+recent = all_bets.loc[all_bets['Datetime'] == '08-01-2023']
+print(len(recent))
 print(recent['Turnover'].mean())
+
+print(recent.loc[all_bets['Midpoint Percentage'] <= threshold, 'Turnover'].mean())
+
