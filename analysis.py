@@ -61,14 +61,15 @@ betfair_data.to_csv(f'analysis/results/betfair_data.csv')
 all_bets = pd.merge(all_bets, betfair_data, left_on=['Horse', 'Datetime'], right_on=['SELECTION_NAME', 'EVENT_DT'])
 all_bets["Turnover"] = (all_bets["Price"] / all_bets["BSP"] * 100)
 all_bets.drop('EVENT_DT', inplace=True, axis=1)
+all_bets.drop('SELECTION_NAME', inplace=True, axis=1)
 
 all_bets.to_csv(f'analysis/results/all_bets2.csv')
 
 print(all_bets['Turnover'].mean(), len(all_bets))
 
-recent = all_bets.loc[all_bets['Datetime'] == '08-01-2023']
-print(len(recent))
-print(recent['Turnover'].mean())
+recent = all_bets.loc[all_bets['Datetime'] == '09-01-2023']
 
-print(recent.loc[all_bets['Midpoint Percentage'] <= threshold, 'Turnover'].mean())
+adjusted_recent = recent.loc[recent['Horse'] != 'Trigger']
+print(recent['Turnover'].mean(), len(recent))
+print(adjusted_recent['Turnover'].mean(), len(adjusted_recent))
 
