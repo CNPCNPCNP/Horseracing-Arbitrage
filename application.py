@@ -187,7 +187,9 @@ class Application():
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
                     try:
                         timestamp = datetime.now()
-                        betted = self.bet_horse(wd, horse, 1, race)
+                        amount = round_closest(TARGET_WINNINGS / self.price, 0.1)
+                        print(f"Betting {amount}")
+                        betted = self.bet_horse(wd, horse, amount, race)
                         bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, last_price, midpoint_price, race.get_event_id())
                     except NoSuchElementException as ex:
                         print(ex)
@@ -216,7 +218,7 @@ class Application():
         wd.close()
         self.refresh_races()
     
-    def bet_horse(self, wd: uc.Chrome, target_horse: str, amount: int, race: Race):
+    def bet_horse(self, wd: uc.Chrome, target_horse: str, amount: int, race: Race) -> bool:
         horses = wd.find_elements(By.CLASS_NAME, "RunnerDetails_competitorName__UZ66s")
         prices = wd.find_elements(By.CLASS_NAME, "OddsButton_info__5qV64")
         wd.implicitly_wait(0.5)
@@ -346,6 +348,12 @@ class Bet():
                             'Midpoint Price': self.midpoint_price
                             }, index=[self.time.strftime('%d-%m-%Y %H:%M:%S')])
         bet.to_csv(f'bets/{date}_{self.horse}_{self.venue}_{self.race_number}.csv')
+
+"""
+Useful rounding function for ensuring bet amounts are round numbers
+"""
+def round_closest(x: float, a: float) -> float:
+    return round((x / a) * a, 2) 
 
 """
 Main entry point for application logic. 
