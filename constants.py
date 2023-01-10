@@ -40,6 +40,8 @@ VENUES = {# Greyhound races
           "Ballarat": "Ballarat",
           "Dapto": "Dapto",
           "Hobart": "Hobart",
+          "Temora": "Temora",
+          "Murray Bridge Straight": "Murray Bridge",
 
 
           # Trots
@@ -125,6 +127,7 @@ VENUES = {# Greyhound races
           "Gatton": "Gatton",
           "Mackay": "Mackay",
           "Port Pirie": "Port Pirie",
+          "Yarra Valley": "Yarra Valley",
 
 
           # US horse races have different format, need to scrape differently. Here for now
