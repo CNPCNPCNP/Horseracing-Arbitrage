@@ -68,8 +68,6 @@ all_bets.to_csv(f'analysis/results/all_bets2.csv')
 print(all_bets['Turnover'].mean(), len(all_bets))
 
 recent = all_bets.loc[(all_bets['Datetime'] == '09-01-2023') | (all_bets['Datetime'] == '08-01-2023')]
-
-adjusted_recent = recent.loc[(recent['Midpoint Percentage'] <= 0.94) & (recent['Horse'] != "Trigger")]
 print(recent['Turnover'].mean(), len(recent))
-print(adjusted_recent['Turnover'].mean(), len(adjusted_recent))
+
 

@@ -187,10 +187,10 @@ class Application():
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
                     try:
                         timestamp = datetime.now()
-                        amount = round_closest(TARGET_WINNINGS / self.price, 0.1)
+                        amount = round(TARGET_WINNINGS / price, 1) #Round to nearest 10c to make amounts less suspicious
                         print(f"Betting {amount}")
                         betted = self.bet_horse(wd, horse, amount, race)
-                        bet = Bet(horse, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, last_price, midpoint_price, race.get_event_id())
+                        bet = Bet(horse, amount, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, last_price, midpoint_price, race.get_event_id())
                     except NoSuchElementException as ex:
                         print(ex)
                         print(f"Bet failed @ {race.get_venue()}")
@@ -318,8 +318,9 @@ class Application():
         scraper.close()
 
 class Bet():
-    def __init__(self, horse: str, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, last_price: float, midpoint_price: float, event_id: int):
+    def __init__(self, horse: str, amount: float, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, last_price: float, midpoint_price: float, event_id: int):
         self.horse = horse
+        self.amount = amount
         self.type = type
         self.venue = venue
         self.race_number = race_number
@@ -338,6 +339,7 @@ class Bet():
     def log_bet(self) -> None:
         date = datetime.now().strftime('%d-%m-%Y')
         bet = pd.DataFrame({'Horse': self.horse,
+                            'Amount': self.amount,
                             'Type': self.type,
                             'Venue': f'{self.venue} {self.race_number}',
                             'Location': self.location,
@@ -348,12 +350,6 @@ class Bet():
                             'Midpoint Price': self.midpoint_price
                             }, index=[self.time.strftime('%d-%m-%Y %H:%M:%S')])
         bet.to_csv(f'bets/{date}_{self.horse}_{self.venue}_{self.race_number}.csv')
-
-"""
-Useful rounding function for ensuring bet amounts are round numbers
-"""
-def round_closest(x: float, a: float) -> float:
-    return round((x / a) * a, 2) 
 
 """
 Main entry point for application logic. 

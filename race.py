@@ -94,7 +94,7 @@ class Race():
             results[horse] = betr_price, betfair_price, midpoint_price
         return results
 
-    def get_arb_horses(self) -> tuple[str, int, int]:
+    def get_arb_horses(self) -> tuple[str, int, int, int, int]:
         if self._volume < 150:
             return None, None, None, None, None
         for horse in self._prices:
