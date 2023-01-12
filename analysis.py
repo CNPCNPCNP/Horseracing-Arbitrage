@@ -64,13 +64,16 @@ all_bets['Expected Value'] = ((all_bets["Price"] - 1) * (1 / all_bets['BSP']) + 
 
 all_bets.drop('EVENT_DT', inplace=True, axis=1)
 all_bets.drop('SELECTION_NAME', inplace=True, axis=1)
+all_bets.drop('MENU_HINT', inplace=True, axis=1)
 all_bets.fillna(1, inplace=True)
+
+all_bets['Datetime'] = pd.to_datetime(all_bets['Datetime'], format='%d-%m-%Y')
 
 all_bets.to_csv(f'analysis/results/all_bets2.csv')
 
-print(all_bets['Turnover'].mean(), len(all_bets))
-print(all_bets['Expected Value'].mean())
+recent = all_bets.loc[all_bets['Datetime'] >= pd.Timestamp(year=2023, month=1, day=8)]
+yesterday = all_bets.loc[all_bets['Datetime'] == pd.Timestamp('today').floor('D') - pd.Timedelta(1, unit='D')]
 
-recent = all_bets.loc[(all_bets['Datetime'] == '10-01-2023') | (all_bets['Datetime'] == '09-01-2023') | (all_bets['Datetime'] == '08-01-2023')]
-recent2 = all_bets.loc[(all_bets['Datetime'] == '11-01-2023')]
-print(recent2['Turnover'].mean(), len(recent2))
+print(all_bets['Turnover'].mean(), len(all_bets))
+print(recent['Turnover'].mean(), len(recent))
+print(yesterday['Turnover'].mean(), len(yesterday))
