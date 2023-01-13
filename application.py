@@ -210,11 +210,18 @@ class Application():
                         wd.get(race.get_url())
                     else:
                         self.fails += 1
-                        
+            
+            if race.check_betfair_prices():
+                current = datetime.now()
+                comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
+                race.log = pd.concat([race.log, comparison])
             time.sleep(0.5) # Poll race data every 0.5 seconds
+        
         event.clear()
         self.races.remove(race) # Remove race from races when completed
         print("Removed race", race.get_venue(), race.get_race_number())
+        date = datetime.now()
+        race.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}_{race.get_event_id()}.csv')
         wd.close()
         self.refresh_races()
     
@@ -306,15 +313,8 @@ class Application():
                 break
                 #Close betr and betfair threads if for some reason the betfair scraping fails
             
-            if race.check_betfair_prices():
-                current = datetime.now()
-                comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
-            scraper.log = pd.concat([scraper.log, comparison])
             time.sleep(0.5) # Poll race data every 0.5s
         event.clear()
-        date = datetime.now()
-
-        scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}_{race.get_event_id()}.csv')
         scraper.close()
 
 class Bet():

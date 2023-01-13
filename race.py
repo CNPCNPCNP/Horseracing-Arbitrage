@@ -1,3 +1,4 @@
+import pandas as pd
 import shin
 from enum import Enum
 
@@ -22,6 +23,8 @@ class Race():
         self._betfair_prices = {}
         self._midpoint_prices = {}
         self._volume = 0
+
+        self.log = pd.DataFrame()
 
     def get_venue(self) -> str:
         return self._venue

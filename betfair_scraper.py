@@ -28,7 +28,6 @@ class BetfairRaceScraper():
         self.password.send_keys(password)
         self.wd.execute_script(CLICK, self.login)
 
-        self.log = pd.DataFrame()
         self.wd.implicitly_wait(15)
         time.sleep(8)
 
