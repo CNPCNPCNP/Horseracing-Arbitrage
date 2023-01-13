@@ -73,9 +73,7 @@ all_bets.to_csv(f'analysis/results/all_bets2.csv')
 
 recent = all_bets.loc[all_bets['Datetime'] >= pd.Timestamp(year=2023, month=1, day=8)]
 yesterday = all_bets.loc[all_bets['Datetime'] == pd.Timestamp('today').floor('D') - pd.Timedelta(1, unit='D')]
-filtered = recent.loc[recent['Midpoint Percentage'] <= 0.90]
 
 print(all_bets['Turnover'].mean(), len(all_bets))
 print(recent['Turnover'].mean(), len(recent))
 print(yesterday['Turnover'].mean(), len(yesterday))
-
