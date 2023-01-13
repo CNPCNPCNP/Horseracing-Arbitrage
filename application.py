@@ -61,6 +61,7 @@ class Application():
         # Return early and don't refresh if refreshing boolean is False
         if not self.refreshing:
             return
+        self.refreshing = False
         # Return early if we are already scraping the correct number of races
         if len(self.races) >= self.number_of_races:
             return
@@ -80,6 +81,7 @@ class Application():
                 self.races.add(race)
                 self.betted[race] = 0
         print("Successfully refreshed")
+        self.refreshing = True
 
     """
     Starts a thread for a given race and enters loop of refreshing data for that race (opens a new browser window)
@@ -185,6 +187,8 @@ class Application():
                 horse, price, volume, midpoint_price = race.get_arb_horses()
                 if horse and horse not in self.betted_horses:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
+                    comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
+                    comparison['Betted'] = 1
                     try:
                         timestamp = datetime.now()
                         amount = round(TARGET_WINNINGS / price, 1) #Round to nearest 10c to make amounts less suspicious
@@ -199,6 +203,8 @@ class Application():
 
                     if betted:
                         bet.log_bet()
+                        race.log = pd.concat([race.log, comparison])
+
                         self.betted[race] += 1/price
                         self.betted_horses.add(horse)
                         try:
@@ -214,6 +220,7 @@ class Application():
             if race.check_betfair_prices():
                 current = datetime.now()
                 comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
+                comparison['Betted'] = 0
                 race.log = pd.concat([race.log, comparison])
             time.sleep(0.5) # Poll race data every 0.5 seconds
         
@@ -221,7 +228,8 @@ class Application():
         self.races.remove(race) # Remove race from races when completed
         print("Removed race", race.get_venue(), race.get_race_number())
         date = datetime.now()
-        race.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}_{race.get_event_id()}.csv')
+        if self.betted[race]:
+            race.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}_{race.get_event_id()}.csv')
         wd.close()
         self.refresh_races()
     
@@ -373,9 +381,7 @@ def main() -> None:
     while time.time() < stop_time:
         print(stop_time - time.time())
         print(app.races, app.fails)
-        time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
-                       # do so maybe it doesn't matter.
-        #app.refresh_races()
+        time.sleep(30)
     
     app.refreshing = False
     exit() # Won't fully exit until all threads are done apparently
