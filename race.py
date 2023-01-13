@@ -93,7 +93,7 @@ class Race():
 
     def get_arb_horses(self) -> tuple[str, int, int, int, int]:
         if self._volume < 150:
-            return None, None, None, None, None
+            return None, None, None, None
         for horse in self._prices:
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
@@ -101,7 +101,7 @@ class Race():
             if midpoint_price <= betr_price * 0.94 and betr_price <= 10:
                 return horse, betr_price, self._volume, midpoint_price
             
-        return None, None, None, None, None
+        return None, None, None, None
 
     def __repr__(self) -> str:
         return f"<{self.get_venue()}, {self.get_race_number()}, {self.get_type()}>"
