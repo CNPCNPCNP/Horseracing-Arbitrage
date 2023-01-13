@@ -300,10 +300,10 @@ class Application():
                 race.set_volume(volume)
                 prices, _ = midpoint_method()
                 race.set_midpoint_prices(prices)
-            except NoSuchElementException as ex:
+            except NoSuchElementException:
                 print(f"No Such element, closing thread for race {race.get_race_number()} {race.get_venue()}!")
                 event.clear()
-                raise ex
+                break
                 #Close betr and betfair threads if for some reason the betfair scraping fails
             
             if race.check_betfair_prices():
