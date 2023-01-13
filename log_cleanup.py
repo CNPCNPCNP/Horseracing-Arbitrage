@@ -16,6 +16,3 @@ for log in logs:
     df.reset_index(inplace=True)
     df.drop('index', inplace=True, axis=1)
     all_logs.append(df)
-
-print(all_logs[0])
-all_logs[0].to_csv(f'analysis/results/all_logs.csv')
