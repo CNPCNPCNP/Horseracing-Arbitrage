@@ -8,6 +8,8 @@ bets = os.listdir('bets')
 all_bets = pd.DataFrame()
 
 for bet in bets:
+    if bet == '.gitignore':
+        continue
     df = pd.read_csv(f'bets/{bet}', index_col=0)
     all_bets = pd.concat([all_bets, df])
 

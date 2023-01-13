@@ -320,6 +320,12 @@ class Application():
                 event.clear()
                 break
                 #Close betr and betfair threads if for some reason the betfair scraping fails
+
+            if race.check_betfair_prices():
+                current = datetime.now()
+                comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
+                comparison['Betted'] = 0
+                race.log = pd.concat([race.log, comparison])
             
             time.sleep(0.5) # Poll race data every 0.5s
         event.clear()
