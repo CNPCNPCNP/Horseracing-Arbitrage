@@ -182,7 +182,7 @@ class Application():
     
         while self.get_race_data(wd, race) and event.is_set(): # If method returns False, thread should close
             if race.check_betfair_prices() and self.betted[race] <= 0.5:
-                horse, price, volume, last_price, midpoint_price = race.get_arb_horses()
+                horse, price, volume, midpoint_price = race.get_arb_horses()
                 if horse and horse not in self.betted_horses:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
                     try:
@@ -190,7 +190,7 @@ class Application():
                         amount = round(TARGET_WINNINGS / price, 1) #Round to nearest 10c to make amounts less suspicious
                         print(f"Betting {amount}")
                         betted = self.bet_horse(wd, horse, amount, race)
-                        bet = Bet(horse, amount, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, last_price, midpoint_price, race.get_event_id())
+                        bet = Bet(horse, amount, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, midpoint_price, race.get_event_id())
                     except NoSuchElementException as ex:
                         print(ex)
                         print(f"Bet failed @ {race.get_venue()}")
@@ -318,7 +318,7 @@ class Application():
         scraper.close()
 
 class Bet():
-    def __init__(self, horse: str, amount: float, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, last_price: float, midpoint_price: float, event_id: int):
+    def __init__(self, horse: str, amount: float, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, midpoint_price: float, event_id: int):
         self.horse = horse
         self.amount = amount
         self.type = type
@@ -328,9 +328,8 @@ class Bet():
         self.volume = volume
         self.time = time
         self.event_id = event_id
-
-        self.last_price = last_price
         self.midpoint_price = midpoint_price
+
         if venue in AMERICAN_RACES:
             self.location = 'USA'
         else:
@@ -346,7 +345,6 @@ class Bet():
                             'Event ID': self.event_id,
                             'Price': self.price,
                             'Volume': self.volume,
-                            'Last Price': self.last_price,
                             'Midpoint Price': self.midpoint_price
                             }, index=[self.time.strftime('%d-%m-%Y %H:%M:%S')])
         bet.to_csv(f'bets/{date}_{self.horse}_{self.venue}_{self.race_number}.csv')
