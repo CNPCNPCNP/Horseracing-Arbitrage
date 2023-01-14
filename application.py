@@ -189,7 +189,7 @@ class Application():
                     comparison['Betted'] = 1
                     try:
                         timestamp = datetime.now()
-                        amount = round(TARGET_WINNINGS / price, 1) #Round to nearest 10c to make amounts less suspicious
+                        amount = myround(TARGET_WINNINGS / price, 1) #Round to nearest 10c to make amounts less suspicious
                         print(f"Betting {amount}")
                         betted = self.bet_horse(wd, horse, amount, race)
                         bet = Bet(horse, amount, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, midpoint_price, race.get_event_id())
@@ -358,6 +358,9 @@ class Bet():
                             'Midpoint Price': self.midpoint_price
                             }, index=[self.time.strftime('%d-%m-%Y %H:%M:%S')])
         bet.to_csv(f'bets/{date}_{self.horse}_{self.venue}_{self.race_number}.csv')
+
+def myround(x, prec=2, base=.05):
+    return round(base * round(x/base), prec)
 
 """
 Main entry point for application logic. 
