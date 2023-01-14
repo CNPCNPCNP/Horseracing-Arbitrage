@@ -187,7 +187,7 @@ class Application():
                 horse, price, volume, midpoint_price = race.get_arb_horses()
                 if horse and horse not in self.betted_horses:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
-                    comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
+                    comparison = pd.DataFrame([race.compare_prices()], index=[datetime.now().strftime('%d-%m-%Y %H:%M:%S.%f')])
                     comparison['Betted'] = 1
                     try:
                         timestamp = datetime.now()
@@ -218,8 +218,7 @@ class Application():
                         self.fails += 1
             
             if race.check_betfair_prices():
-                current = datetime.now()
-                comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
+                comparison = pd.DataFrame([race.compare_prices()], index=[datetime.now().strftime('%d-%m-%Y %H:%M:%S.%f')])
                 comparison['Betted'] = 0
                 race.log = pd.concat([race.log, comparison])
             time.sleep(0.5) # Poll race data every 0.5 seconds
@@ -322,8 +321,7 @@ class Application():
                 #Close betr and betfair threads if for some reason the betfair scraping fails
 
             if race.check_betfair_prices():
-                current = datetime.now()
-                comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
+                comparison = pd.DataFrame([race.compare_prices()], index=[datetime.now().strftime('%d-%m-%Y %H:%M:%S.%f')])
                 comparison['Betted'] = 0
                 race.log = pd.concat([race.log, comparison])
             
