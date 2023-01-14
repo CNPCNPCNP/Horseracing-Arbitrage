@@ -131,20 +131,20 @@ VENUES = {# Greyhound races
           "Yarra Valley": "Yarra Valley",
           "Devonport Synthetic": "Devonport",
           "Kilmore": "Kilmore",
-          "Tuncurry": "Tuncurry",
+          "Tuncurry": "Tuncurry"
           
 
 
           # US horse races have different format, need to scrape differently. Here for now
-          "Hawthorne": "Hawthorne",
-          "Delta Downs": "Delta Downs",
-          "Penn National": "Penn National",
-          "Remington Park": "Remington Park",
-          "Charles Town": "Charles Town",
-          "Zia Park": "Zia Park",
-          "Turf Paradise": "Turf Paradise",
-          "Golden Gate": "Golden Gate Fields",
-          "Philadelphia Park": "Philadelphia"
+          #"Hawthorne": "Hawthorne",
+          #"Delta Downs": "Delta Downs",
+          #"Penn National": "Penn National",
+          #"Remington Park": "Remington Park",
+          #"Charles Town": "Charles Town",
+          #"Zia Park": "Zia Park",
+          #"Turf Paradise": "Turf Paradise",
+          #"Golden Gate": "Golden Gate Fields",
+          #"Philadelphia Park": "Philadelphia"
           }
 
 # I was getting an error wrapping this by set()
