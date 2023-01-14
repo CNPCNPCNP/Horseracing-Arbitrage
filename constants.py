@@ -130,6 +130,9 @@ VENUES = {# Greyhound races
           "Port Pirie": "Port Pirie",
           "Yarra Valley": "Yarra Valley",
           "Devonport Synthetic": "Devonport",
+          "Kilmore": "Kilmore",
+          "Tuncurry": "Tuncurry",
+          
 
 
           # US horse races have different format, need to scrape differently. Here for now

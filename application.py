@@ -61,7 +61,6 @@ class Application():
         # Return early and don't refresh if refreshing boolean is False
         if not self.refreshing:
             return
-        self.refreshing = False
         # Return early if we are already scraping the correct number of races
         if len(self.races) >= self.number_of_races:
             return
@@ -81,7 +80,6 @@ class Application():
                 self.races.add(race)
                 self.betted[race] = 0
         print("Successfully refreshed")
-        self.refreshing = True
 
     """
     Starts a thread for a given race and enters loop of refreshing data for that race (opens a new browser window)
