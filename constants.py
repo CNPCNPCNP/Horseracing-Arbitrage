@@ -43,6 +43,8 @@ VENUES = {# Greyhound races
           "Hobart": "Hobart",
           "Temora": "Temora",
           "Murray Bridge Straight": "Murray Bridge",
+          "Healesville": "Healesville",
+          "Sandown Park": "Sandown Park",
 
 
           # Trots
@@ -113,6 +115,7 @@ VENUES = {# Greyhound races
           "Randwich Kensington": "Randwick",
           "Moonee Valley": "Moonee Valley",
           "Mt Gambier": "Mount Gambier",
+          "Mount Gambier": "Mount Gambier",
           "Sunshine Coast": "Sunshine Coast",
           "Pakenham": "Pakenham",
           "Stawell": "Stawell",
@@ -131,9 +134,10 @@ VENUES = {# Greyhound races
           "Yarra Valley": "Yarra Valley",
           "Devonport Synthetic": "Devonport",
           "Kilmore": "Kilmore",
-          "Tuncurry": "Tuncurry"
-          
-
+          "Tuncurry": "Tuncurry",
+          "Lismore": "Lismore",
+          "Orange": "Orange",
+          "Strathalbyn": "Strathalbyn",
 
           # US horse races have different format, need to scrape differently. Here for now
           #"Hawthorne": "Hawthorne",
