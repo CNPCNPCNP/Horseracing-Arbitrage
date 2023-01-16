@@ -202,23 +202,11 @@ class Application():
                     if betted:
                         bet.log_bet()
                         race.log = pd.concat([race.log, comparison])
-
+                        print(f'Bet made on {horse} @ {price} for {amount}')
                         self.betted[race] += 1/price
                         self.betted_horses.add(horse)
-                        try:
-                            clear_slip = wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[3]/div[3]/button[1]')
-                            wd.execute_script(CLICK, clear_slip)
-                        except NoSuchElementException:
-                            print(f"Couldn't find refresh button at {race.get_venue()} {race.get_race_number()}")
-                        wd.refresh()
-                        wd.get(race.get_url())
                     else:
                         self.fails += 1
-            
-            if race.check_betfair_prices():
-                comparison = pd.DataFrame([race.compare_prices()], index=[datetime.now().strftime('%d-%m-%Y %H:%M:%S.%f')])
-                comparison['Betted'] = 0
-                race.log = pd.concat([race.log, comparison])
             time.sleep(0.5) # Poll race data every 0.5 seconds
         
         event.clear()
@@ -265,7 +253,6 @@ class Application():
         time.sleep(10)
         try:
             wd.find_element(By.XPATH, '//*[@id="bm-grid"]/div[2]/div/div/div[2]/div/div[2]/div/div[2]/div/span')
-            print(f"Bet placed successfully on {target_horse} for {amount}")
             wd.get(race.get_url())
             wd.refresh()
             return True
@@ -386,6 +373,8 @@ def main() -> None:
     while time.time() < stop_time:
         print(stop_time - time.time())
         print(app.races, app.fails)
+        if not len(app.races):
+            break
         time.sleep(30)
     
     app.refreshing = False
