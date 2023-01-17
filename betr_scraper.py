@@ -4,12 +4,10 @@ from constants import *
 from race import Race, RaceType
 from dotenv import load_dotenv
 
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+import undetected_chromedriver as uc
 
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 """
 Main controller class for building our list of races
 """
@@ -23,9 +21,11 @@ class RaceBuilder():
     uses more threads
     """
     def __init__(self, path: str, url: str, races: int) -> None:
-        options = Options()
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        self.wd = webdriver.Chrome(service = Service(path), options = options)
+        uc_options = uc.ChromeOptions()
+        uc_options.add_experimental_option("prefs", {"credentials_enable_service": False, "profile.password_manager_enabled": False})
+        uc_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+                
+        self.wd = uc.Chrome(options = uc_options)
         self.wd.maximize_window() # For maximizing window
         self.wd.implicitly_wait(3) # gives an implicit wait for 2 seconds
         self.wd.get(url)
