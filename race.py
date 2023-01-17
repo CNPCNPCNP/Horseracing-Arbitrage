@@ -98,7 +98,7 @@ class Race():
             betr_price = self._prices[horse]
             betfair_price = self._betfair_prices.get(horse, 99999)
             midpoint_price = self._midpoint_prices.get(horse, 99996)
-            if midpoint_price <= betr_price * 0.94 and betr_price <= 10:
+            if midpoint_price <= betr_price * 0.95 and betr_price <= 10:
                 return horse, betr_price, self._volume, midpoint_price
             
         return None, None, None, None
