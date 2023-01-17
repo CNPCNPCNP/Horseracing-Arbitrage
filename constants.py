@@ -10,7 +10,7 @@ TROT_ICON = 'M14.9389'
 GREYHOUND_ICON = 'M2.73859'
 WIN_MARKET_REGEX = re.compile(r'^R\d+$')
 PRICE_PROJECTION = filters.price_projection(price_data = filters.price_data(ex_best_offers=True))
-RUN_TIME_MINUTES = 600
+RUN_TIME_MINUTES = 840
 TARGET_WINNINGS = 10
 
 #First value is BETR venue name, second value is betfair venue name
@@ -130,18 +130,21 @@ VENUES = {# Greyhound races
           "Port Pirie": "Port Pirie",
           "Yarra Valley": "Yarra Valley",
           "Devonport Synthetic": "Devonport",
+          "Kilmore": "Kilmore",
+          "Tuncurry": "Tuncurry"
+          
 
 
           # US horse races have different format, need to scrape differently. Here for now
-          "Hawthorne": "Hawthorne",
-          "Delta Downs": "Delta Downs",
-          "Penn National": "Penn National",
-          "Remington Park": "Remington Park",
-          "Charles Town": "Charles Town",
-          "Zia Park": "Zia Park",
-          "Turf Paradise": "Turf Paradise",
-          "Golden Gate": "Golden Gate Fields",
-          "Philadelphia Park": "Philadelphia"
+          #"Hawthorne": "Hawthorne",
+          #"Delta Downs": "Delta Downs",
+          #"Penn National": "Penn National",
+          #"Remington Park": "Remington Park",
+          #"Charles Town": "Charles Town",
+          #"Zia Park": "Zia Park",
+          #"Turf Paradise": "Turf Paradise",
+          #"Golden Gate": "Golden Gate Fields",
+          #"Philadelphia Park": "Philadelphia"
           }
 
 # I was getting an error wrapping this by set()

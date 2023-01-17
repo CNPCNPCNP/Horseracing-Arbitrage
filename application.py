@@ -182,15 +182,17 @@ class Application():
     
         while self.get_race_data(wd, race) and event.is_set(): # If method returns False, thread should close
             if race.check_betfair_prices() and self.betted[race] <= 0.5:
-                horse, price, volume, last_price, midpoint_price = race.get_arb_horses()
+                horse, price, volume, midpoint_price = race.get_arb_horses()
                 if horse and horse not in self.betted_horses:
                     print(f"Attempting to bet on {horse} at {race.get_venue()}")
+                    comparison = pd.DataFrame([race.compare_prices()], index=[datetime.now().strftime('%d-%m-%Y %H:%M:%S.%f')])
+                    comparison['Betted'] = 1
                     try:
                         timestamp = datetime.now()
-                        amount = round(TARGET_WINNINGS / price, 1) #Round to nearest 10c to make amounts less suspicious
+                        amount = myround(TARGET_WINNINGS / price) #Round to nearest 5c to make amounts less suspicious
                         print(f"Betting {amount}")
                         betted = self.bet_horse(wd, horse, amount, race)
-                        bet = Bet(horse, amount, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, last_price, midpoint_price, race.get_event_id())
+                        bet = Bet(horse, amount, race.get_type(), race.get_venue(), race.get_race_number(), price, volume, timestamp, midpoint_price, race.get_event_id())
                     except NoSuchElementException as ex:
                         print(ex)
                         print(f"Bet failed @ {race.get_venue()}")
@@ -199,6 +201,8 @@ class Application():
 
                     if betted:
                         bet.log_bet()
+                        race.log = pd.concat([race.log, comparison])
+
                         self.betted[race] += 1/price
                         self.betted_horses.add(horse)
                         try:
@@ -210,11 +214,19 @@ class Application():
                         wd.get(race.get_url())
                     else:
                         self.fails += 1
-                        
+            
+            if race.check_betfair_prices():
+                comparison = pd.DataFrame([race.compare_prices()], index=[datetime.now().strftime('%d-%m-%Y %H:%M:%S.%f')])
+                comparison['Betted'] = 0
+                race.log = pd.concat([race.log, comparison])
             time.sleep(0.5) # Poll race data every 0.5 seconds
+        
         event.clear()
         self.races.remove(race) # Remove race from races when completed
         print("Removed race", race.get_venue(), race.get_race_number())
+        date = datetime.now()
+        if self.betted[race]:
+            race.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}_{race.get_event_id()}.csv')
         wd.close()
         self.refresh_races()
     
@@ -300,25 +312,23 @@ class Application():
                 race.set_volume(volume)
                 prices, _ = midpoint_method()
                 race.set_midpoint_prices(prices)
-            except NoSuchElementException as ex:
+            except NoSuchElementException:
                 print(f"No Such element, closing thread for race {race.get_race_number()} {race.get_venue()}!")
                 event.clear()
-                raise ex
+                break
                 #Close betr and betfair threads if for some reason the betfair scraping fails
-            
+
             if race.check_betfair_prices():
-                current = datetime.now()
-                comparison = pd.DataFrame([race.compare_prices()], index=[current.strftime('%d-%m-%Y %H:%M:%S.%f')])
-            scraper.log = pd.concat([scraper.log, comparison])
+                comparison = pd.DataFrame([race.compare_prices()], index=[datetime.now().strftime('%d-%m-%Y %H:%M:%S.%f')])
+                comparison['Betted'] = 0
+                race.log = pd.concat([race.log, comparison])
+            
             time.sleep(0.5) # Poll race data every 0.5s
         event.clear()
-        date = datetime.now()
-
-        scraper.log.to_csv(f'logs/{date.strftime("%d-%m-%Y_%S")}_{race.get_venue()}_{race.get_race_number()}_{race.get_market_id()}_{race.get_event_id()}.csv')
         scraper.close()
 
 class Bet():
-    def __init__(self, horse: str, amount: float, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, last_price: float, midpoint_price: float, event_id: int):
+    def __init__(self, horse: str, amount: float, type: RaceType, venue: str, race_number: int, price: float, volume: int, time: datetime, midpoint_price: float, event_id: int):
         self.horse = horse
         self.amount = amount
         self.type = type
@@ -328,9 +338,8 @@ class Bet():
         self.volume = volume
         self.time = time
         self.event_id = event_id
-
-        self.last_price = last_price
         self.midpoint_price = midpoint_price
+
         if venue in AMERICAN_RACES:
             self.location = 'USA'
         else:
@@ -346,10 +355,12 @@ class Bet():
                             'Event ID': self.event_id,
                             'Price': self.price,
                             'Volume': self.volume,
-                            'Last Price': self.last_price,
                             'Midpoint Price': self.midpoint_price
                             }, index=[self.time.strftime('%d-%m-%Y %H:%M:%S')])
         bet.to_csv(f'bets/{date}_{self.horse}_{self.venue}_{self.race_number}.csv')
+
+def myround(x, prec=2, base=.05):
+    return round(base * round(float(x)/base), prec)
 
 """
 Main entry point for application logic. 
@@ -375,9 +386,7 @@ def main() -> None:
     while time.time() < stop_time:
         print(stop_time - time.time())
         print(app.races, app.fails)
-        time.sleep(30) # Update races every 30 seconds, may not need to do this that often. But it seems pretty fast to
-                       # do so maybe it doesn't matter.
-        #app.refresh_races()
+        time.sleep(30)
     
     app.refreshing = False
     exit() # Won't fully exit until all threads are done apparently
