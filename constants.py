@@ -45,6 +45,7 @@ VENUES = {# Greyhound races
           "Murray Bridge Straight": "Murray Bridge",
           "Healesville": "Healesville",
           "Sandown Park": "Sandown Park",
+          "Dubbo": "Dubbo",
 
 
           # Trots
@@ -138,6 +139,8 @@ VENUES = {# Greyhound races
           "Lismore": "Lismore",
           "Orange": "Orange",
           "Strathalbyn": "Strathalbyn",
+          "Camperdown": "Camperdown",
+          "Randwick": "Randwick",
 
           # US horse races have different format, need to scrape differently. Here for now
           #"Hawthorne": "Hawthorne",

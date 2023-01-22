@@ -23,7 +23,6 @@ class RaceBuilder():
     def __init__(self, path: str, url: str, races: int) -> None:
         uc_options = uc.ChromeOptions()
         uc_options.add_experimental_option("prefs", {"credentials_enable_service": False, "profile.password_manager_enabled": False})
-        uc_options.add_experimental_option('excludeSwitches', ['enable-logging'])
                 
         self.wd = uc.Chrome(options = uc_options)
         self.wd.maximize_window() # For maximizing window
