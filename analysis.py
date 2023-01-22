@@ -56,12 +56,11 @@ betfair_data.drop('EVENT_ID', inplace=True, axis=1)
 betfair_data = betfair_data.replace(regex=[r'\d+\.\s'], value='')
 betfair_data['EVENT_DT'] = betfair_data['EVENT_DT'].apply(lambda x: x.split()[0])
 betfair_data['MENU_HINT'] = betfair_data['MENU_HINT'].apply(lambda x: " ".join(x.split()[2:-3]))
-betfair_data['MENU_HINT'] = betfair_data['MENU_HINT'].apply(lambda x: " ".join(x.split()[2:-3]))
 
 all_bets.to_csv(f'analysis/results/all_bets.csv')
 betfair_data.to_csv(f'analysis/results/betfair_data.csv')
 
-all_bets = pd.merge(all_bets, betfair_data, left_on=['Horse', 'Datetime', 'Venue', 'Venue'], right_on=['SELECTION_NAME', 'EVENT_DT', 'MENU_HINT', 'MENU_HINT'])
+all_bets = pd.merge(all_bets, betfair_data, left_on=['Horse', 'Datetime', 'Venue'], right_on=['SELECTION_NAME', 'EVENT_DT', 'MENU_HINT'])
 all_bets["Turnover"] = (all_bets["Price"] / all_bets["BSP"] * 100)
 all_bets['Expected Value'] = ((all_bets["Price"] - 1) * (1 / all_bets['BSP']) + (-1 * (1 - 1 / all_bets['BSP'])))
 
