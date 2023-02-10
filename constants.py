@@ -69,6 +69,7 @@ VENUES = {# Greyhound races
           "Young": "Young",
           "Gloucester Park": "Gloucester Park",
           "Echuca": "Echuca",
+          "Sapphire Coast": "Sapphire Coast",
           
           # Horse races
           "Geelong": "Geelong",
@@ -141,6 +142,7 @@ VENUES = {# Greyhound races
           "Strathalbyn": "Strathalbyn",
           "Camperdown": "Camperdown",
           "Randwick": "Randwick",
+          "Benalla": "Benalla",
 
           # US horse races have different format, need to scrape differently. Here for now
           #"Hawthorne": "Hawthorne",

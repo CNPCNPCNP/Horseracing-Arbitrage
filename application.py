@@ -95,24 +95,29 @@ class Application():
         self.betr_update(wd, race)
 
     def login(self, wd: uc.Chrome, url: str) -> None:
-        wd.get(url)
-        login = wd.find_element(By.XPATH, '//*[@id="bm-root"]/div[3]/header/div/div[2]/button[1]')
-        wd.execute_script(CLICK, login)
-        time.sleep(1.5 + random.random())
-        username_entry = wd.find_element(By.XPATH, '//*[@id="Username"]')
-        password_entry = wd.find_element(By.XPATH, '//*[@id="Password"]')
-        login_button = wd.find_element(By.XPATH, '//*[@id="floating-ui-root"]/div/div/div/div[2]/div[2]/form/div[3]/div/button')
-        
-        username_entry.click()
+        try:
+            wd.get(url)
+            login = wd.find_element(By.XPATH, '//*[@id="bm-root"]/div[3]/header/div/div[2]/button[1]')
+            wd.execute_script(CLICK, login)
+            time.sleep(1.5 + random.random())
+            username_entry = wd.find_element(By.XPATH, '//*[@id="Username"]')
+            password_entry = wd.find_element(By.XPATH, '//*[@id="Password"]')
+            login_button = wd.find_element(By.XPATH, '//*[@id="floating-ui-root"]/div/div/div/div[2]/div[2]/form/div[3]/div/button')
+            
+            username_entry.click()
 
-        time.sleep(random.random()/5)
-        username_entry.send_keys(self.betr_username)
-        time.sleep(random.random()/5)
-        password_entry.click()
-        password_entry.send_keys(self.betr_password)
-        time.sleep(random.random()/5)
-        login_button.click()
-        time.sleep(5)
+            time.sleep(random.random()/5)
+            username_entry.send_keys(self.betr_username)
+            time.sleep(random.random()/5)
+            password_entry.click()
+            password_entry.send_keys(self.betr_password)
+            time.sleep(random.random()/5)
+            login_button.click()
+            time.sleep(5)
+        except:
+            print(f'Failed login, trying again at {url}')
+            self.login(wd, url)
+            return
         try:
             _ = wd.find_element(By.XPATH, '//*[@id="Username"]')
             print(f"Failed login, trying again at {url}")
