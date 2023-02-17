@@ -90,11 +90,21 @@ class Application():
         wd = uc.Chrome(options = uc_options)
         wd.maximize_window()
         wd.implicitly_wait(8)
-        self.login(wd, race.get_url())
 
-        self.betr_update(wd, race)
+        login_attempts = 0
+        logged_in = False
+        while login_attempts < 10:
+            if self.login(wd, race.get_url()):
+                logged_in = True
+                break
+            login_attempts += 1
+        if not logged_in:
+            self.races.remove(race)
+            print("Removed race as unable to login", race.get_venue(), race.get_race_number())
+        else:
+            self.betr_update(wd, race)
 
-    def login(self, wd: uc.Chrome, url: str) -> None:
+    def login(self, wd: uc.Chrome, url: str) -> bool:
         try:
             wd.get(url)
             login = wd.find_element(By.XPATH, '//*[@id="bm-root"]/div[3]/header/div/div[2]/button[1]')
@@ -116,14 +126,14 @@ class Application():
             time.sleep(5)
         except:
             print(f'Failed login, trying again at {url}')
-            self.login(wd, url)
-            return
+            return False
         try:
             _ = wd.find_element(By.XPATH, '//*[@id="Username"]')
             print(f"Failed login, trying again at {url}")
-            self.login(wd, url)
+            return False
         except NoSuchElementException:
             print(f"Successfully logged in at {url}")
+            return True
 
     """
     Updates the race data for a race and saves the details to the race dict. In future, this method will probably be
